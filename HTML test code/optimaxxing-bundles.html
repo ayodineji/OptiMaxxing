@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPTIMAXXING — Protocol Bundles</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:  #050505;
+    --neon:   #C8FF00;
+    --white:  #F5F5F5;
+    --gray:   #111111;
+    --mid:    #1a1a1a;
+    --dim:    #666;
+    --border: #1e1e1e;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black); color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden; cursor: none;
+  }
+
+  /* CUSTOM CURSOR */
+  .cursor {
+    position: fixed; width: 8px; height: 8px;
+    background: var(--neon); border-radius: 50%;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s;
+  }
+  .cursor-ring {
+    position: fixed; width: 32px; height: 32px;
+    border: 1px solid rgba(200,255,0,0.4); border-radius: 50%;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+  }
+  body:has(.bundle-card:hover) .cursor-ring { width: 56px; height: 56px; border-color: var(--neon); }
+
+  /* NAV */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 48px; height: 64px;
+    background: rgba(5,5,5,0.95); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif; font-size: 22px;
+    letter-spacing: 4px; color: var(--neon); text-decoration: none;
+  }
+  .nav-logo span { color: var(--white); }
+  .nav-right { display: flex; align-items: center; gap: 32px; }
+  .nav-link {
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--dim); text-decoration: none; transition: color 0.2s;
+  }
+  .nav-link:hover { color: var(--neon); }
+  .nav-cta {
+    background: var(--neon); color: var(--black);
+    padding: 10px 20px; font-family: 'Space Mono', monospace;
+    font-size: 10px; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; text-decoration: none;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 140px 48px 80px;
+    position: relative; overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 60% 60% at 80% 50%, rgba(200,255,0,0.04) 0%, transparent 70%),
+      repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(255,255,255,0.012) 80px, rgba(255,255,255,0.012) 81px),
+      repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(255,255,255,0.012) 80px, rgba(255,255,255,0.012) 81px);
+  }
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 5px; text-transform: uppercase;
+    color: var(--neon); margin-bottom: 20px;
+    opacity: 0; animation: fadeUp 0.6s 0.1s forwards;
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 11vw, 148px);
+    line-height: 0.88; letter-spacing: 2px;
+    color: var(--white); margin-bottom: 32px;
+    opacity: 0; animation: fadeUp 0.7s 0.25s forwards;
+  }
+  .hero-title .line2 { color: var(--neon); display: block; }
+  .hero-sub {
+    font-size: 16px; color: var(--dim); max-width: 520px;
+    line-height: 1.85; margin-bottom: 48px;
+    opacity: 0; animation: fadeUp 0.7s 0.4s forwards;
+  }
+  .hero-stats {
+    display: flex; gap: 56px; flex-wrap: wrap;
+    padding-top: 40px; border-top: 1px solid var(--border);
+    opacity: 0; animation: fadeUp 0.7s 0.55s forwards;
+  }
+  .stat { display: flex; flex-direction: column; gap: 4px; }
+  .stat-n { font-family: 'Bebas Neue', sans-serif; font-size: 52px; color: var(--neon); line-height: 1; }
+  .stat-l { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim); }
+
+  /* SAVINGS TICKER */
+  .ticker {
+    background: var(--neon); padding: 11px 0;
+    overflow: hidden; white-space: nowrap;
+  }
+  .ticker-inner {
+    display: inline-block; animation: tick 25s linear infinite;
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    font-weight: 700; letter-spacing: 3px; color: var(--black);
+    text-transform: uppercase;
+  }
+  @keyframes tick { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* FILTER BAR */
+  .filter-bar {
+    padding: 24px 48px;
+    background: var(--gray);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  }
+  .filter-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--dim); margin-right: 8px; }
+  .filter-btn {
+    font-family: 'Space Mono', monospace; font-size: 9px;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 8px 16px; background: var(--mid); color: var(--dim);
+    border: 1px solid var(--border); cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    background: var(--neon); color: var(--black); border-color: var(--neon);
+  }
+
+  /* BUNDLE GRID */
+  .bundles-section { padding: 64px 48px; }
+  .section-label {
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 4px; text-transform: uppercase; color: var(--neon);
+    margin-bottom: 10px; display: block;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 56px;
+    color: var(--white); line-height: 1; margin-bottom: 48px;
+  }
+
+  .bundle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 2px;
+  }
+
+  /* BUNDLE CARD */
+  .bundle-card {
+    background: var(--gray);
+    padding: 0;
+    display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+    transition: transform 0.3s ease;
+    cursor: none;
+  }
+  .bundle-card:hover { transform: translateY(-4px); z-index: 2; }
+  .bundle-card.featured {
+    grid-column: span 2;
+    flex-direction: row;
+  }
+
+  /* Card accent line */
+  .bundle-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; background: var(--border); transition: background 0.3s;
+  }
+  .bundle-card:hover::before { background: var(--neon); }
+  .bundle-card.featured::before { background: var(--neon); }
+
+  /* Card image area */
+  .card-visual {
+    position: relative; overflow: hidden;
+    background: var(--mid);
+  }
+  .bundle-card:not(.featured) .card-visual {
+    height: 220px;
+  }
+  .bundle-card.featured .card-visual {
+    width: 45%; flex-shrink: 0; height: auto; min-height: 360px;
+  }
+  .card-visual-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr; height: 100%; gap: 2px;
+  }
+  .card-visual-item {
+    background: #1e1e1e;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace; font-size: 9px;
+    letter-spacing: 2px; text-transform: uppercase; color: #333;
+    transition: background 0.3s;
+  }
+  .bundle-card:hover .card-visual-item { background: #222; }
+  .card-visual-item.accent { background: rgba(200,255,0,0.07); color: rgba(200,255,0,0.4); }
+  .card-visual-item svg { width: 32px; height: 32px; stroke: currentColor; opacity: 0.4; }
+
+  /* Protocol badge */
+  .proto-badge {
+    position: absolute; top: 16px; left: 16px;
+    font-family: 'Space Mono', monospace; font-size: 8px;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 4px 10px; background: var(--black);
+    color: var(--neon); z-index: 2;
+  }
+  .bundle-card.featured .proto-badge { background: var(--neon); color: var(--black); }
+
+  /* Savings badge */
+  .save-badge {
+    position: absolute; top: 16px; right: 16px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 28px;
+    color: var(--neon); line-height: 1; z-index: 2;
+    text-align: right;
+  }
+  .save-badge span {
+    display: block; font-family: 'Space Mono', monospace;
+    font-size: 8px; letter-spacing: 1px; color: var(--dim);
+    text-transform: uppercase;
+  }
+
+  /* Card body */
+  .card-body {
+    padding: 28px 28px 24px; flex: 1; display: flex; flex-direction: column;
+  }
+  .bundle-card.featured .card-body { padding: 40px 36px; }
+
+  .card-num {
+    font-family: 'Space Mono', monospace; font-size: 9px;
+    letter-spacing: 3px; color: var(--dim); text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .card-name {
+    font-family: 'Bebas Neue', sans-serif; font-size: 32px;
+    color: var(--white); line-height: 1; margin-bottom: 6px;
+  }
+  .bundle-card.featured .card-name { font-size: 48px; }
+  .card-tagline {
+    font-size: 13px; color: var(--neon); letter-spacing: 1px;
+    font-family: 'Space Mono', monospace; font-size: 9px;
+    text-transform: uppercase; letter-spacing: 2px;
+    margin-bottom: 18px;
+  }
+  .card-why {
+    font-size: 14px; color: var(--dim); line-height: 1.8;
+    margin-bottom: 22px; flex: 1;
+  }
+  .bundle-card.featured .card-why { font-size: 15px; max-width: 480px; }
+
+  /* Items list */
+  .card-items { margin-bottom: 24px; }
+  .card-items-label {
+    font-family: 'Space Mono', monospace; font-size: 9px;
+    letter-spacing: 3px; text-transform: uppercase; color: var(--dim);
+    margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .card-items-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .item-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 0; border-bottom: 1px solid #141414;
+  }
+  .item-row:last-child { border-bottom: none; }
+  .item-dot { width: 4px; height: 4px; background: var(--neon); flex-shrink: 0; }
+  .item-name { font-size: 13px; color: var(--white); flex: 1; }
+  .item-val { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); text-decoration: line-through; }
+
+  /* Pricing */
+  .card-pricing {
+    display: flex; align-items: flex-end; gap: 12px; margin-bottom: 18px;
+  }
+  .price-now {
+    font-family: 'Bebas Neue', sans-serif; font-size: 44px;
+    color: var(--neon); line-height: 1;
+  }
+  .bundle-card.featured .price-now { font-size: 64px; }
+  .price-was {
+    font-family: 'Space Mono', monospace; font-size: 13px;
+    color: var(--dim); text-decoration: line-through; padding-bottom: 6px;
+  }
+  .price-label {
+    font-family: 'Space Mono', monospace; font-size: 9px;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--dim);
+    padding-bottom: 8px;
+  }
+
+  /* CTA */
+  .card-cta {
+    display: block; width: 100%; padding: 14px;
+    background: transparent; border: 1px solid #222;
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--white); text-decoration: none; text-align: center;
+    transition: all 0.2s; cursor: none;
+  }
+  .card-cta:hover { background: var(--neon); border-color: var(--neon); color: var(--black); }
+  .bundle-card.featured .card-cta {
+    background: var(--neon); border-color: var(--neon); color: var(--black);
+  }
+  .bundle-card.featured .card-cta:hover { opacity: 0.85; }
+
+  /* WHY BUNDLES SECTION */
+  .why-section {
+    padding: 96px 48px;
+    background: #080808;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .why-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: center; margin-top: 56px;
+  }
+  .why-left { }
+  .why-stat-block { margin-bottom: 48px; }
+  .why-big-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 120px; line-height: 0.85;
+    color: var(--neon); opacity: 0.15; position: relative;
+  }
+  .why-big-num-label {
+    font-family: 'Bebas Neue', sans-serif; font-size: 48px;
+    color: var(--white); margin-top: -20px; position: relative;
+  }
+  .why-right { }
+  .why-point { padding: 24px 0; border-bottom: 1px solid var(--border); }
+  .why-point:first-child { padding-top: 0; }
+  .why-point:last-child { border-bottom: none; }
+  .why-point-num {
+    font-family: 'Space Mono', monospace; font-size: 9px;
+    letter-spacing: 3px; text-transform: uppercase; color: var(--neon);
+    margin-bottom: 8px;
+  }
+  .why-point-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 24px;
+    color: var(--white); margin-bottom: 8px;
+  }
+  .why-point-body { font-size: 14px; color: var(--dim); line-height: 1.8; }
+
+  /* GUARANTEE BAND */
+  .guarantee {
+    padding: 56px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 32px; flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+  }
+  .guarantee-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(24px, 3.5vw, 44px); color: var(--black) !important;
+  }
+  .guarantee-sub {
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(0,0,0,0.45); max-width: 200px;
+  }
+  .guarantee { background: var(--neon); }
+
+  /* FOOTER */
+  .footer {
+    padding: 40px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-brand {
+    font-family: 'Bebas Neue', sans-serif; font-size: 20px;
+    letter-spacing: 4px; color: var(--neon); text-decoration: none;
+  }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-link {
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    color: var(--dim); text-decoration: none; transition: color 0.2s;
+  }
+  .footer-link:hover { color: var(--neon); }
+  .footer-copy { font-size: 11px; color: var(--dim); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* MOBILE */
+  @media (max-width: 900px) {
+    .nav { padding: 0 20px; }
+    .nav-right .nav-link { display: none; }
+    .hero { padding: 100px 20px 60px; }
+    .hero-stats { gap: 24px; }
+    .filter-bar { padding: 16px 20px; }
+    .bundles-section { padding: 48px 20px; }
+    .bundle-grid { grid-template-columns: 1fr; }
+    .bundle-card.featured { flex-direction: column; grid-column: span 1; }
+    .bundle-card.featured .card-visual { width: 100%; height: 220px; }
+    .why-section { padding: 60px 20px; }
+    .why-grid { grid-template-columns: 1fr; gap: 40px; }
+    .guarantee { flex-direction: column; padding: 40px 20px; }
+    .footer { flex-direction: column; padding: 28px 20px; text-align: center; }
+    .footer-links { justify-content: center; flex-wrap: wrap; }
+    body { cursor: auto; }
+    .cursor, .cursor-ring { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#" class="nav-logo">OPTIMA<span>XXING</span></a>
+  <div class="nav-right">
+    <a href="#" class="nav-link">Protocols</a>
+    <a href="#" class="nav-link">Collections</a>
+    <a href="#" class="nav-cta">Start The Protocol</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <p class="hero-eyebrow">// The Optimaxxing Stack</p>
+  <h1 class="hero-title">
+    SERIOUS MEN<br>
+    <span class="line2">STACK TOOLS.</span>
+  </h1>
+  <p class="hero-sub">Individual tools optimize one variable. Protocol bundles optimize the system. Every bundle is built around a specific outcome — with the exact tools that compound into measurable results.</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-n">8</span><span class="stat-l">Protocol Bundles</span></div>
+    <div class="stat"><span class="stat-n">30%</span><span class="stat-l">Average Savings</span></div>
+    <div class="stat"><span class="stat-n">30</span><span class="stat-l">Day Guarantee</span></div>
+    <div class="stat"><span class="stat-n">6</span><span class="stat-l">Protocols Covered</span></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <span class="ticker-inner">SAVE 30% VS INDIVIDUAL &nbsp;·&nbsp; 30-DAY PROTOCOL GUARANTEE &nbsp;·&nbsp; FREE TRACKED SHIPPING &nbsp;·&nbsp; OPTIMIZED FOR RESULTS NOT AESTHETICS &nbsp;·&nbsp; STACK THE PROTOCOLS &nbsp;·&nbsp; SAVE 30% VS INDIVIDUAL &nbsp;·&nbsp; 30-DAY PROTOCOL GUARANTEE &nbsp;·&nbsp; FREE TRACKED SHIPPING &nbsp;·&nbsp; OPTIMIZED FOR RESULTS NOT AESTHETICS &nbsp;·&nbsp; STACK THE PROTOCOLS &nbsp;·&nbsp;</span>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <span class="filter-label">Filter:</span>
+  <button class="filter-btn active" onclick="filterBundles('all', this)">All Bundles</button>
+  <button class="filter-btn" onclick="filterBundles('face', this)">Facemaxx</button>
+  <button class="filter-btn" onclick="filterBundles('sleep', this)">Sleepmaxx</button>
+  <button class="filter-btn" onclick="filterBundles('gym', this)">Gymmaxx</button>
+  <button class="filter-btn" onclick="filterBundles('frame', this)">Framemaxx</button>
+  <button class="filter-btn" onclick="filterBundles('style', this)">Stylemaxx</button>
+  <button class="filter-btn" onclick="filterBundles('mind', this)">Mindmaxx</button>
+  <button class="filter-btn" onclick="filterBundles('clean', this)" style="--btn-neon:#00CFFF">Cleanmaxx</button>
+  <button class="filter-btn" onclick="filterBundles('full', this)">Full Stack</button>
+</div>
+
+<!-- BUNDLES -->
+<section class="bundles-section">
+  <span class="section-label">// Protocol Stacks</span>
+  <h2 class="section-title">CHOOSE YOUR STACK</h2>
+
+  <div class="bundle-grid" id="bundleGrid">
+
+    <!-- FEATURED: Full Optimization Starter -->
+    <div class="bundle-card featured reveal" data-proto="full">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+        </div>
+        <div class="proto-badge">Most Popular</div>
+        <div class="save-badge">30%<span>saved</span></div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 01 &nbsp;·&nbsp; Full Stack</div>
+        <div class="card-name">FULL OPTIMIZATION STARTER</div>
+        <div class="card-tagline">One tool from every protocol. The complete system.</div>
+        <p class="card-why">This is the bundle for the man who understands that single-variable optimization has a ceiling. When you address face, sleep, training, frame, style, and mind simultaneously — the variables compound. The starter kit gives you one precision tool from each of the six protocols so you can run the full system from day one and identify which variables move the needle fastest for your specific situation.</p>
+        <div class="card-items">
+          <div class="card-items-label">What's included</div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">LED Face Mask (Facemaxx)</span><span class="item-val">$85</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Mouth Tape + Silk Sleep Mask (Sleepmaxx)</span><span class="item-val">$38</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Resistance Bands Set (Gymmaxx)</span><span class="item-val">$28</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Posture Corrector (Framemaxx)</span><span class="item-val">$30</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Clothes Steamer (Stylemaxx)</span><span class="item-val">$62</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Mushroom Coffee 30-Day Supply (Mindmaxx)</span><span class="item-val">$45</span></div>
+        </div>
+        <div class="card-pricing">
+          <div class="price-now">$199</div>
+          <div class="price-was">$288</div>
+          <div class="price-label">save $89</div>
+        </div>
+        <a href="#" class="card-cta">Add Full Stack To Protocol &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Facemaxx Starter Kit -->
+    <div class="bundle-card reveal" data-proto="face">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="8" r="5"/><path d="M3 21v-1a9 9 0 0118 0v1"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+          </div>
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+        </div>
+        <div class="proto-badge">Facemaxx // 01</div>
+        <div class="save-badge">25%<span>saved</span></div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 02 &nbsp;·&nbsp; Facemaxx</div>
+        <div class="card-name">FACEMAXX STARTER KIT</div>
+        <div class="card-tagline">The entry protocol. Results in 2 weeks.</div>
+        <p class="card-why">Most guys spend months deciding which skincare tool to buy first. This kit removes the decision. Gua sha improves lymphatic drainage and facial definition. The ice roller reduces puffiness and tightens pores within minutes of use. Collagen eye patches target the highest-impact area for visible improvement. Three tools. One protocol. Daily habit in under 10 minutes.</p>
+        <div class="card-items">
+          <div class="card-items-label">What's included</div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Rose Quartz Gua Sha Stone</span><span class="item-val">$22</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Cryo Face Roller</span><span class="item-val">$26</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Collagen Eye Patches (60 pairs)</span><span class="item-val">$34</span></div>
+        </div>
+        <div class="card-pricing">
+          <div class="price-now">$49</div>
+          <div class="price-was">$82</div>
+          <div class="price-label">save $33</div>
+        </div>
+        <a href="#" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Facemaxx Pro Kit -->
+    <div class="bundle-card reveal" data-proto="face">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="3"/><path d="M6.3 6.3a8 8 0 000 11.4M17.7 6.3a8 8 0 010 11.4M3 3l18 18"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg>
+          </div>
+        </div>
+        <div class="proto-badge">Facemaxx // 01</div>
+        <div class="save-badge">28%<span>saved</span></div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 03 &nbsp;·&nbsp; Facemaxx Pro</div>
+        <div class="card-name">FACEMAXX PRO KIT</div>
+        <div class="card-tagline">Clinical-grade. The tools that actually change tissue.</div>
+        <p class="card-why">The LED mask delivers 630nm red light and 830nm near-infrared — the two wavelengths with the most clinical backing for collagen stimulation and cellular repair. The facial steamer creates the optimal skin environment before every session, opening pores and maximizing absorption. The derma roller compounds the effect by creating micro-channels that accelerate results. This is not skincare — this is facial engineering.</p>
+        <div class="card-items">
+          <div class="card-items-label">What's included</div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">LED Face Mask (630nm + 830nm)</span><span class="item-val">$85</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Facial Steamer (compact)</span><span class="item-val">$62</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Derma Roller (0.25mm)</span><span class="item-val">$22</span></div>
+        </div>
+        <div class="card-pricing">
+          <div class="price-now">$122</div>
+          <div class="price-was">$169</div>
+          <div class="price-label">save $47</div>
+        </div>
+        <a href="#" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Sleepmaxx Night Protocol -->
+    <div class="bundle-card reveal" data-proto="sleep">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+          </div>
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          </div>
+        </div>
+        <div class="proto-badge">Sleepmaxx // 02</div>
+        <div class="save-badge">32%<span>saved</span></div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 04 &nbsp;·&nbsp; Sleepmaxx</div>
+        <div class="card-name">SLEEPMAXX NIGHT PROTOCOL</div>
+        <div class="card-tagline">Optimize the 8 hours where everything compounds.</div>
+        <p class="card-why">Sleep is not recovery. Sleep is production — testosterone synthesis, cortisol clearance, skin cell regeneration, memory consolidation. If you are not controlling your sleep environment you are running a production facility with no quality control. Mouth tape forces nasal breathing which increases nitric oxide and reduces snoring. Blue light glasses protect melatonin onset. The silk mask eliminates light. Magnesium glycinate is the most bioavailable form for sleep quality. Four tools. One system. Non-negotiable.</p>
+        <div class="card-items">
+          <div class="card-items-label">What's included</div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Mouth Tape (60-night supply)</span><span class="item-val">$20</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Silk Sleep Mask</span><span class="item-val">$24</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Blue Light Blocking Glasses</span><span class="item-val">$28</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Magnesium Glycinate (60 capsules)</span><span class="item-val">$34</span></div>
+        </div>
+        <div class="card-pricing">
+          <div class="price-now">$72</div>
+          <div class="price-was">$106</div>
+          <div class="price-label">save $34</div>
+        </div>
+        <a href="#" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Gymmaxx Recovery Stack -->
+    <div class="bundle-card reveal" data-proto="gym">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M6 5v14M18 5v14M2 9h4M18 9h4M2 15h4M18 15h4"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          </div>
+        </div>
+        <div class="proto-badge">Gymmaxx // 03</div>
+        <div class="save-badge">29%<span>saved</span></div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 05 &nbsp;·&nbsp; Gymmaxx</div>
+        <div class="card-name">GYMMAXX RECOVERY STACK</div>
+        <div class="card-tagline">Training is the stimulus. Recovery is the result.</div>
+        <p class="card-why">Most men optimize the hour they spend in the gym and ignore the 23 hours they spend recovering. That is where muscle is built, inflammation is cleared, and the adaptation actually happens. The compact massage gun addresses deep tissue tension that foam rollers cannot reach. Creatine monohydrate is the most extensively studied performance supplement with zero legitimate downsides. The massage balls target specific trigger points. Resistance bands extend the protocol beyond the gym. Recovery is not optional — it is the protocol.</p>
+        <div class="card-items">
+          <div class="card-items-label">What's included</div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Compact Massage Gun</span><span class="item-val">$75</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Creatine Monohydrate (500g)</span><span class="item-val">$38</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Lacrosse Massage Ball Set (3)</span><span class="item-val">$20</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Resistance Bands Set</span><span class="item-val">$28</span></div>
+        </div>
+        <div class="card-pricing">
+          <div class="price-now">$114</div>
+          <div class="price-was">$161</div>
+          <div class="price-label">save $47</div>
+        </div>
+        <a href="#" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Framemaxx Daily Kit -->
+    <div class="bundle-card reveal" data-proto="frame">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+          </div>
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          </div>
+        </div>
+        <div class="proto-badge">Framemaxx // 04</div>
+        <div class="save-badge">27%<span>saved</span></div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 06 &nbsp;·&nbsp; Framemaxx</div>
+        <div class="card-name">FRAMEMAXX DAILY KIT</div>
+        <div class="card-tagline">Frame is the variable that speaks before you do.</div>
+        <p class="card-why">Your posture communicates dominance or submission before a single word is said. Forward head position, rounded shoulders, and a weak jawline are the three most visible frame deficits in this age group — and all three are correctable. The posture corrector retrains spinal positioning during the day. The grip strengthener builds the handshake and forearm that projects physical capability. The jaw exerciser develops the angular jaw definition that frames the face. Three problems. Three tools. One daily protocol.</p>
+        <div class="card-items">
+          <div class="card-items-label">What's included</div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Smart Posture Corrector Brace</span><span class="item-val">$30</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Grip Strengthener (progressive resistance)</span><span class="item-val">$22</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Jawline Trainer / Mastic Gum (2-pack)</span><span class="item-val">$26</span></div>
+        </div>
+        <div class="card-pricing">
+          <div class="price-now">$57</div>
+          <div class="price-was">$78</div>
+          <div class="price-label">save $21</div>
+        </div>
+        <a href="#" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Stylemaxx Grooming Kit -->
+    <div class="bundle-card reveal" data-proto="style">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M20.38 8.57l-1.23 1.85a8 8 0 01-.22 7.58H5.07A8 8 0 0115.58 6.85l1.85-1.23A10 10 0 0120.38 8.57z"/><path d="M10.21 3.06A10 10 0 003.06 10.21"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 105 19.07"/></svg>
+          </div>
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg>
+          </div>
+        </div>
+        <div class="proto-badge">Stylemaxx // 05</div>
+        <div class="save-badge">31%<span>saved</span></div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 07 &nbsp;·&nbsp; Stylemaxx</div>
+        <div class="card-name">STYLEMAXX GROOMING KIT</div>
+        <div class="card-tagline">The details are what separate you from most men.</div>
+        <p class="card-why">Physical optimization means nothing if the presentation is sloppy. A wrinkled shirt kills frame. An unkept beard kills jawline definition. Scuffed shoes kill the entire aesthetic before anyone sees your face. The clothes steamer eliminates every crease in under 60 seconds. The beard grooming kit builds the daily 5-minute ritual that keeps the jawline sharp. The shoe cleaning set maintains the finishing detail that men who care about presentation never skip. Details compound. Sloppiness compounds. Choose.</p>
+        <div class="card-items">
+          <div class="card-items-label">What's included</div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Compact Clothes Steamer</span><span class="item-val">$62</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Beard Grooming Kit (comb + oil + balm)</span><span class="item-val">$38</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Shoe Cleaning Kit (5-piece)</span><span class="item-val">$28</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Fabric Shaver / Lint Remover</span><span class="item-val">$38</span></div>
+        </div>
+        <div class="card-pricing">
+          <div class="price-now">$115</div>
+          <div class="price-was">$166</div>
+          <div class="price-label">save $51</div>
+        </div>
+        <a href="#" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Mindmaxx Focus Protocol -->
+    <div class="bundle-card reveal" data-proto="mind">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          </div>
+          <div class="card-visual-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="card-visual-item accent">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+        </div>
+        <div class="proto-badge">Mindmaxx // 06</div>
+        <div class="save-badge">33%<span>saved</span></div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 08 &nbsp;·&nbsp; Mindmaxx</div>
+        <div class="card-name">MINDMAXX FOCUS PROTOCOL</div>
+        <div class="card-tagline">Cognitive output is a variable. Optimize it.</div>
+        <p class="card-why">Focus is not a personality trait. It is a physiological state that is either supported or undermined by what you put in your body and the environment you operate in. Lion's Mane mushroom coffee provides NGF stimulation and clean caffeine without the cortisol spike of espresso. The nootropic stack addresses acetylcholine, dopamine, and mitochondrial function simultaneously. Blue light glasses protect melatonin for evening recovery. The Pomodoro timer creates the structured work intervals that neuroscience consistently validates for deep work. Your mind is the most important variable. Start treating it like one.</p>
+        <div class="card-items">
+          <div class="card-items-label">What's included</div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Mushroom Coffee — Lion's Mane + Chaga (30 servings)</span><span class="item-val">$48</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Nootropic Stack (L-Theanine + Alpha GPC)</span><span class="item-val">$42</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Blue Light Blocking Glasses (clear lens)</span><span class="item-val">$28</span></div>
+          <div class="item-row"><div class="item-dot"></div><span class="item-name">Mechanical Focus Timer</span><span class="item-val">$26</span></div>
+        </div>
+        <div class="card-pricing">
+          <div class="price-now">$96</div>
+          <div class="price-was">$144</div>
+          <div class="price-label">save $48</div>
+        </div>
+        <a href="#" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Cleanmaxx Clean Living Kit -->
+    <div class="bundle-card reveal" data-proto="clean">
+      <div class="card-visual" style="background:#0a0f10">
+        <div class="card-visual-grid">
+          <div class="card-visual-item" style="background:#0d1518;color:rgba(0,207,255,0.35)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="card-visual-item" style="background:#0a1215;color:#1e2a2e">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          </div>
+          <div class="card-visual-item" style="background:#0a1215;color:#1e2a2e">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg>
+          </div>
+          <div class="card-visual-item" style="background:#0d1518;color:rgba(0,207,255,0.35)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg>
+          </div>
+        </div>
+        <div class="proto-badge" style="color:#00CFFF;border-color:#00CFFF22">Cleanmaxx // 07</div>
+        <div class="save-badge" style="color:#00CFFF">28%<span>saved</span></div>
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 09 &nbsp;·&nbsp; Cleanmaxx</div>
+        <div class="card-name">CLEANMAXX CLEAN LIVING KIT</div>
+        <div class="card-tagline" style="color:#00CFFF">Eliminate what's working against you.</div>
+        <p class="card-why">Every protocol you run has a ceiling — and that ceiling is set by what you're being exposed to daily without knowing it. PFAS from non-stick cookware. BPA from plastic containers leaching into heated food. Microplastics from plastic water bottles accumulating in tissue. Chlorine and heavy metals in unfiltered tap water. These are documented variables quietly suppressing the results of everything else you're doing. Cleanmaxx is the protocol that removes the interference.</p>
+        <div class="card-items">
+          <div class="card-items-label">What's included</div>
+          <div class="item-row"><div class="item-dot" style="background:#00CFFF"></div><span class="item-name">Glass Food Storage Container Set (10-piece)</span><span class="item-val">$52</span></div>
+          <div class="item-row"><div class="item-dot" style="background:#00CFFF"></div><span class="item-name">Stainless Steel Water Bottle (insulated, 32oz)</span><span class="item-val">$38</span></div>
+          <div class="item-row"><div class="item-dot" style="background:#00CFFF"></div><span class="item-name">Water Filter Pitcher (removes chlorine + heavy metals)</span><span class="item-val">$45</span></div>
+          <div class="item-row"><div class="item-dot" style="background:#00CFFF"></div><span class="item-name">Natural Aluminum-Free Deodorant (2-pack)</span><span class="item-val">$36</span></div>
+          <div class="item-row"><div class="item-dot" style="background:#00CFFF"></div><span class="item-name">Beeswax Food Wraps — replaces plastic wrap</span><span class="item-val">$24</span></div>
+        </div>
+        <div class="card-pricing">
+          <div class="price-now" style="color:#00CFFF">$139</div>
+          <div class="price-was">$195</div>
+          <div class="price-label">save $56</div>
+        </div>
+        <a href="#" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- WHY BUNDLES -->
+<section class="why-section">
+  <span class="section-label">// The Logic</span>
+  <h2 class="section-title" style="font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--white);line-height:1;margin-bottom:0;">WHY STACKS<br>BEAT SINGLES</h2>
+  <div class="why-grid">
+    <div class="why-left reveal">
+      <div class="why-big-num">3X</div>
+      <div class="why-big-num-label">Faster Results</div>
+      <p style="font-size:14px;color:var(--dim);line-height:1.8;margin-top:16px;max-width:380px;">Compounding variables produce compounding results. A man who optimizes face, sleep, and frame simultaneously sees results in weeks that a man optimizing one variable sees in months.</p>
+    </div>
+    <div class="why-right reveal">
+      <div class="why-point">
+        <div class="why-point-num">// 01</div>
+        <div class="why-point-title">Tools Are Designed To Stack</div>
+        <p class="why-point-body">Every bundle is built so the tools reinforce each other. The facial steamer creates the optimal skin state before the LED mask. The magnesium glycinate supports the sleep environment the silk mask creates. Protocol design is the difference between a collection of gadgets and a system.</p>
+      </div>
+      <div class="why-point">
+        <div class="why-point-num">// 02</div>
+        <div class="why-point-title">You Save 25–33% Vs Buying Separately</div>
+        <p class="why-point-body">Every bundle is priced at a meaningful discount to the individual component prices. The savings are real — calculated against each product's individual listed price. Stack more, spend less per variable optimized.</p>
+      </div>
+      <div class="why-point">
+        <div class="why-point-num">// 03</div>
+        <div class="why-point-title">One Decision Instead Of Six</div>
+        <p class="why-point-body">Decision fatigue is a real cognitive drain. The bundle removes six sourcing decisions and replaces them with one. The protocol is already designed. All you have to do is run it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GUARANTEE -->
+<div class="guarantee">
+  <p class="guarantee-text">30-Day Protocol Guarantee.<br>Results or your money back.</p>
+  <p class="guarantee-sub">Every bundle is covered. No conditions. No questions. Return within 30 days if the protocol does not deliver.</p>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <a href="#" class="footer-brand">OPTIMAXXING</a>
+  <div class="footer-links">
+    <a href="#" class="footer-link">Protocols</a>
+    <a href="#" class="footer-link">Returns</a>
+    <a href="#" class="footer-link">Shipping</a>
+    <a href="#" class="footer-link">FAQ</a>
+  </div>
+  <p class="footer-copy">30-Day Protocol Guarantee &nbsp;&middot;&nbsp; &copy; 2026 Optimaxxing</p>
+</footer>
+
+<script>
+  // Custom cursor
+  var cursor = document.getElementById('cursor');
+  var ring = document.getElementById('cursorRing');
+  document.addEventListener('mousemove', function(e) {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top  = e.clientY + 'px';
+    ring.style.left   = e.clientX + 'px';
+    ring.style.top    = e.clientY + 'px';
+  });
+
+  // Filter
+  function filterBundles(proto, btn) {
+    document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelectorAll('.bundle-card').forEach(function(card) {
+      if (proto === 'all' || card.dataset.proto === proto) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // Scroll reveal
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
+</script>
+</body>
+</html>

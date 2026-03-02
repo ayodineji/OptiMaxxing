@@ -1,0 +1,6 @@
+{
+  "sections": {
+    "main": { "type": "optimaxxing-quiz", "settings": {} }
+  },
+  "order": ["main"]
+}

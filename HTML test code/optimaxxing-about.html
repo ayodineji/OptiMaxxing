@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPTIMAXXING — The Mission</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #050505;
+    --neon:  #C8FF00;
+    --white: #F5F5F5;
+    --gray:  #111111;
+    --mid:   #1a1a1a;
+    --dim:   #666;
+    --border:#1e1e1e;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; overflow-x: hidden; cursor: none; }
+
+  .cursor      { position: fixed; width: 8px; height: 8px; background: var(--neon); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); }
+  .cursor-ring { position: fixed; width: 32px; height: 32px; border: 1px solid rgba(200,255,0,0.35); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: all 0.15s ease; }
+
+  /* NAV */
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 0 48px; height: 64px; background: rgba(5,5,5,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; color: var(--neon); text-decoration: none; }
+  .nav-logo span { color: var(--white); }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-link { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim); text-decoration: none; transition: color 0.2s; }
+  .nav-link:hover, .nav-link.active { color: var(--neon); }
+  .nav-cta { background: var(--neon); color: var(--black); padding: 10px 20px; font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 120px 48px 80px; position: relative; overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 50% 70% at 100% 0%, rgba(200,255,0,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 40% at 0% 100%, rgba(200,255,0,0.03) 0%, transparent 50%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(255,255,255,0.013) 79px, rgba(255,255,255,0.013) 80px),
+      repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(255,255,255,0.013) 79px, rgba(255,255,255,0.013) 80px);
+  }
+  .hero-counter {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(160px, 28vw, 400px);
+    line-height: 0.8; color: rgba(200,255,0,0.04);
+    position: absolute; right: -20px; bottom: 40px;
+    pointer-events: none; user-select: none; letter-spacing: -4px;
+  }
+  .hero-eyebrow { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--neon); margin-bottom: 28px; opacity: 0; animation: fadeUp 0.6s 0.1s forwards; }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(64px, 10vw, 140px);
+    line-height: 0.88; color: var(--white);
+    max-width: 900px; margin-bottom: 40px;
+    opacity: 0; animation: fadeUp 0.7s 0.2s forwards;
+  }
+  .hero-title em { color: var(--neon); font-style: normal; }
+  .hero-body {
+    font-size: 17px; color: var(--dim); line-height: 2; max-width: 600px;
+    opacity: 0; animation: fadeUp 0.7s 0.35s forwards;
+  }
+  .hero-scroll {
+    position: absolute; bottom: 32px; left: 48px;
+    font-family: 'Space Mono', monospace; font-size: 9px;
+    letter-spacing: 3px; text-transform: uppercase; color: var(--dim);
+    display: flex; align-items: center; gap: 12px;
+    opacity: 0; animation: fadeUp 0.6s 0.6s forwards;
+  }
+  .hero-scroll::before { content: ''; display: block; width: 40px; height: 1px; background: var(--dim); }
+
+  /* MANIFESTO */
+  .manifesto { padding: 120px 48px; border-bottom: 1px solid var(--border); }
+  .manifesto-inner { max-width: 860px; margin: 0 auto; }
+  .manifesto-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--neon); margin-bottom: 56px; display: block; }
+  .manifesto-line {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 6vw, 80px);
+    color: var(--white); line-height: 1.05;
+    margin-bottom: 4px;
+    opacity: 0; transform: translateX(-20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .manifesto-line.visible { opacity: 1; transform: translateX(0); }
+  .manifesto-line .dim { color: #2a2a2a; }
+  .manifesto-line .accent { color: var(--neon); }
+  .manifesto-divider { height: 1px; background: var(--border); margin: 64px 0; }
+  .manifesto-body { font-size: 17px; color: var(--dim); line-height: 2; columns: 2; column-gap: 60px; }
+  @media (max-width: 768px) { .manifesto-body { columns: 1; } }
+
+  /* PROTOCOLS OVERVIEW */
+  .protocols { background: var(--gray); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .protocols-header { padding: 80px 48px 40px; border-bottom: 1px solid var(--border); }
+  .protocols-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--neon); margin-bottom: 16px; display: block; }
+  .protocols-title { font-family: 'Bebas Neue', sans-serif; font-size: 56px; color: var(--white); line-height: 1; }
+  .protocol-row {
+    display: grid; grid-template-columns: 80px 1fr 1fr; align-items: center;
+    padding: 28px 48px; border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+    opacity: 0; transform: translateY(12px);
+    transition: opacity 0.5s ease, transform 0.5s ease, background 0.2s;
+  }
+  .protocol-row.visible { opacity: 1; transform: translateY(0); }
+  .protocol-row:hover { background: var(--mid); }
+  .protocol-row:last-child { border-bottom: none; }
+  .proto-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--neon); opacity: 0.25; line-height: 1; }
+  .proto-info { padding-right: 40px; }
+  .proto-name { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--white); line-height: 1; margin-bottom: 6px; }
+  .proto-tag { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--neon); }
+  .proto-desc { font-size: 14px; color: var(--dim); line-height: 1.8; }
+  .cleanmaxx-tag { color: #00CFFF !important; }
+
+  /* BELIEFS */
+  .beliefs { padding: 120px 48px; border-bottom: 1px solid var(--border); }
+  .beliefs-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--neon); margin-bottom: 64px; display: block; }
+  .beliefs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .belief-card { background: var(--gray); padding: 40px 32px; position: relative; overflow: hidden; }
+  .belief-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--border); transition: background 0.3s; }
+  .belief-card:hover::before { background: var(--neon); }
+  .belief-num { font-family: 'Bebas Neue', sans-serif; font-size: 80px; color: rgba(200,255,0,0.06); line-height: 1; margin-bottom: -16px; }
+  .belief-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--white); margin-bottom: 16px; line-height: 1.1; }
+  .belief-body { font-size: 14px; color: var(--dim); line-height: 1.9; }
+
+  /* CTA BAND */
+  .cta-band {
+    padding: 100px 48px; display: grid;
+    grid-template-columns: 1fr auto; align-items: center; gap: 60px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cta-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 7vw, 96px); color: var(--white); line-height: 0.9; }
+  .cta-title em { color: var(--neon); font-style: normal; display: block; }
+  .cta-buttons { display: flex; flex-direction: column; gap: 12px; min-width: 240px; }
+  .cta-primary { background: var(--neon); color: var(--black); padding: 18px 32px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; text-decoration: none; text-align: center; display: block; }
+  .cta-secondary { background: transparent; color: var(--white); padding: 18px 32px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; text-decoration: none; text-align: center; display: block; border: 1px solid var(--border); transition: border-color 0.2s; }
+  .cta-secondary:hover { border-color: var(--dim); }
+
+  /* FOOTER */
+  .footer { padding: 40px 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+  .footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 4px; color: var(--neon); text-decoration: none; }
+  .footer-copy { font-size: 11px; color: var(--dim); font-family: 'Space Mono', monospace; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 768px) {
+    .nav { padding: 0 20px; }
+    .nav-links .nav-link { display: none; }
+    .hero { padding: 100px 20px 60px; }
+    .hero-scroll { left: 20px; }
+    .manifesto { padding: 80px 20px; }
+    .protocols-header { padding: 60px 20px 32px; }
+    .protocol-row { grid-template-columns: 56px 1fr; padding: 20px; }
+    .proto-desc { display: none; }
+    .beliefs { padding: 80px 20px; }
+    .beliefs-grid { grid-template-columns: 1fr; }
+    .cta-band { grid-template-columns: 1fr; padding: 60px 20px; }
+    .footer { padding: 28px 20px; flex-direction: column; text-align: center; }
+    body { cursor: auto; }
+    .cursor, .cursor-ring { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav class="nav">
+  <a href="#" class="nav-logo">OPTIMA<span>XXING</span></a>
+  <div class="nav-links">
+    <a href="#" class="nav-link">Protocols</a>
+    <a href="#" class="nav-link">Bundles</a>
+    <a href="#" class="nav-link active">Mission</a>
+    <a href="optimaxxing-quiz.html" class="nav-cta">Start The Protocol</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-counter">07</div>
+  <p class="hero-eyebrow">// The Mission</p>
+  <h1 class="hero-title">
+    OPTIMIZATION<br>IS NOT A<br><em>HOBBY.</em>
+  </h1>
+  <p class="hero-body">It is a decision. The decision that every variable in your life — your face, your sleep, your training, your frame, your presentation, your mind, your environment — is either being optimized or left to chance. Most men leave everything to chance. Optimaxxing exists for the ones who don't.</p>
+  <div class="hero-scroll">Scroll to read</div>
+</section>
+
+<!-- MANIFESTO -->
+<section class="manifesto">
+  <div class="manifesto-inner">
+    <span class="manifesto-label">// The Philosophy</span>
+    <div class="manifesto-line"><span class="dim">Most men</span> DRIFT.</div>
+    <div class="manifesto-line">A <span class="accent">FEW</span> DECIDE.</div>
+    <div class="manifesto-line"><span class="dim">We build for</span></div>
+    <div class="manifesto-line">THE FEW.</div>
+    <div class="manifesto-divider"></div>
+    <div class="manifesto-body">
+      <p>The premise behind Optimaxxing is simple: every area of a man's life that can be improved should be improved, and the tools that make improvement systematic should be in one place, built around a single coherent philosophy.</p>
+      <p style="margin-top:20px">That philosophy is not about vanity. It is not about insecurity. It is about the belief that physical presentation, mental output, and environmental quality are not fixed — they are variables. And every variable can be optimized.</p>
+      <p style="margin-top:20px">The seven Optimaxxing protocols exist because optimization is not one thing. Facemaxx is not the same problem as Mindmaxx. Sleepmaxx is not the same problem as Cleanmaxx. Each protocol addresses a distinct set of variables with the specific tools that move those variables. The system is comprehensive because partial optimization has a ceiling.</p>
+      <p style="margin-top:20px">We are not a supplement brand. We are not a skincare brand. We are not a fitness brand. We are a protocol brand. Every product in this store is selected because it does a measurable job within a specific protocol. If it doesn't move a variable, it doesn't make the cut.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROTOCOLS -->
+<section class="protocols">
+  <div class="protocols-header">
+    <span class="protocols-label">// The Seven Protocols</span>
+    <h2 class="protocols-title">THE COMPLETE<br>SYSTEM</h2>
+  </div>
+
+  <div class="protocol-row">
+    <div class="proto-num">01</div>
+    <div class="proto-info">
+      <div class="proto-name">FACEMAXX</div>
+      <div class="proto-tag">Face Optimization Protocol</div>
+    </div>
+    <div class="proto-desc">LED therapy, gua sha, cryotherapy, microcurrent, and skincare tools for measurable facial improvement. The most clinically validated protocol in the system.</div>
+  </div>
+  <div class="protocol-row">
+    <div class="proto-num">02</div>
+    <div class="proto-info">
+      <div class="proto-name">SLEEPMAXX</div>
+      <div class="proto-tag">Sleep Optimization Protocol</div>
+    </div>
+    <div class="proto-desc">Testosterone synthesis, skin regeneration, cortisol clearance, and cognitive consolidation all happen during sleep. This protocol controls the 8 hours where everything compounds.</div>
+  </div>
+  <div class="protocol-row">
+    <div class="proto-num">03</div>
+    <div class="proto-info">
+      <div class="proto-name">GYMMAXX</div>
+      <div class="proto-tag">Training &amp; Recovery Protocol</div>
+    </div>
+    <div class="proto-desc">Training is the stimulus. Recovery is the result. Tools for the 23 hours that determine whether the hour in the gym actually produces adaptation.</div>
+  </div>
+  <div class="protocol-row">
+    <div class="proto-num">04</div>
+    <div class="proto-info">
+      <div class="proto-name">FRAMEMAXX</div>
+      <div class="proto-tag">Frame &amp; Posture Protocol</div>
+    </div>
+    <div class="proto-desc">Posture, jawline, grip, and physical presence. The variables that communicate dominance or submission before a single word is said.</div>
+  </div>
+  <div class="protocol-row">
+    <div class="proto-num">05</div>
+    <div class="proto-info">
+      <div class="proto-name">STYLEMAXX</div>
+      <div class="proto-tag">Style &amp; Grooming Protocol</div>
+    </div>
+    <div class="proto-desc">The finishing protocol. Physical optimization means nothing if the presentation is sloppy. Tools that make the details — which are what separate men — consistent and automatic.</div>
+  </div>
+  <div class="protocol-row">
+    <div class="proto-num">06</div>
+    <div class="proto-info">
+      <div class="proto-name">MINDMAXX</div>
+      <div class="proto-tag">Focus &amp; Cognition Protocol</div>
+    </div>
+    <div class="proto-desc">Focus is not a personality trait — it is a physiological state. Nootropics, environmental tools, and cognitive inputs that make high output the default rather than the exception.</div>
+  </div>
+  <div class="protocol-row">
+    <div class="proto-num" style="color:#00CFFF;opacity:0.3">07</div>
+    <div class="proto-info">
+      <div class="proto-name">CLEANMAXX</div>
+      <div class="proto-tag cleanmaxx-tag">Clean Living Protocol</div>
+    </div>
+    <div class="proto-desc">The protocol that removes interference. PFAS, BPA, microplastics, endocrine disruptors — silent variables that cap the results of every other protocol you run. Eliminate the ceiling.</div>
+  </div>
+</section>
+
+<!-- BELIEFS -->
+<section class="beliefs">
+  <span class="beliefs-label">// What We Believe</span>
+  <div class="beliefs-grid">
+    <div class="belief-card">
+      <div class="belief-num">01</div>
+      <div class="belief-title">Every Variable Is Optimizable</div>
+      <p class="belief-body">Nothing about your current state is fixed. Skin quality, sleep depth, hormonal function, cognitive output, physical frame — each is a variable with levers. The question is whether you are pulling them deliberately or leaving them to default.</p>
+    </div>
+    <div class="belief-card">
+      <div class="belief-num">02</div>
+      <div class="belief-title">Systems Beat Willpower</div>
+      <p class="belief-body">A man who has to decide every morning whether to run his skincare protocol will skip it on hard days. A man who has the protocol built into a 10-minute daily routine will run it automatically. Tools create systems. Systems create results.</p>
+    </div>
+    <div class="belief-card">
+      <div class="belief-num">03</div>
+      <div class="belief-title">Partial Optimization Has A Ceiling</div>
+      <p class="belief-body">A man who optimizes training but ignores sleep is leaving half the adaptation on the table. A man who works on his face but ignores his environment is fighting against himself. The variables compound — which means they also cap each other.</p>
+    </div>
+    <div class="belief-card">
+      <div class="belief-num">04</div>
+      <div class="belief-title">Quality Is Non-Negotiable</div>
+      <p class="belief-body">Every product in this store is selected on a single criterion: does it do the job within its protocol? Clinical backing matters. Build quality matters. If a product doesn't move a variable, it isn't here. Marketing without substance is the problem we exist to solve.</p>
+    </div>
+    <div class="belief-card">
+      <div class="belief-num">05</div>
+      <div class="belief-title">The Environment Shapes The Man</div>
+      <p class="belief-body">Your results are downstream of your inputs — the chemicals you absorb, the light you expose yourself to, the air you breathe, the food you store. Cleanmaxx exists because no other optimization effort survives a toxic environment.</p>
+    </div>
+    <div class="belief-card">
+      <div class="belief-num">06</div>
+      <div class="belief-title">Decisions Compound</div>
+      <p class="belief-body">A man who makes one optimization decision makes the next one easier. A man who installs a morning protocol runs it automatically in 30 days. Optimization is not a destination. It is a mode of operating that becomes self-sustaining once it starts.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-band">
+  <div class="cta-title">
+    FIND YOUR
+    <em>PROTOCOL.</em>
+  </div>
+  <div class="cta-buttons">
+    <a href="optimaxxing-quiz.html" class="cta-primary">Take The Quiz &rarr;</a>
+    <a href="#" class="cta-secondary">Browse All Protocols</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <a href="#" class="footer-brand">OPTIMAXXING</a>
+  <p class="footer-copy">Optimization + Maximization &nbsp;&middot;&nbsp; &copy; 2026</p>
+</footer>
+
+<script>
+  var cursor = document.getElementById('cursor');
+  var ring   = document.getElementById('cursorRing');
+  document.addEventListener('mousemove', function(e) {
+    cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+    ring.style.left   = e.clientX + 'px'; ring.style.top   = e.clientY + 'px';
+  });
+
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e, i) {
+      if (e.isIntersecting) {
+        setTimeout(function() { e.target.classList.add('visible'); }, i * 80);
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.manifesto-line, .protocol-row').forEach(function(el) { obs.observe(el); });
+</script>
+</body>
+</html>

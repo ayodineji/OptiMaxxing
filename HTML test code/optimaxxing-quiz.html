@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPTIMAXXING — Start Your Protocol</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #050505;
+    --neon:  #C8FF00;
+    --white: #F5F5F5;
+    --gray:  #111111;
+    --mid:   #1a1a1a;
+    --dim:   #555;
+    --border:#1e1e1e;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; overflow-x: hidden; min-height: 100vh; cursor: none; }
+
+  .cursor      { position: fixed; width: 8px; height: 8px; background: var(--neon); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); }
+  .cursor-ring { position: fixed; width: 32px; height: 32px; border: 1px solid rgba(200,255,0,0.35); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: all 0.12s ease; }
+
+  /* NAV */
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 0 40px; height: 60px; background: rgba(5,5,5,0.96); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 4px; color: var(--neon); text-decoration: none; }
+  .nav-logo span { color: var(--white); }
+  .nav-back { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim); text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--white); }
+  .nav-back::before { content: '←'; }
+
+  /* QUIZ SHELL */
+  .quiz-shell {
+    min-height: 100vh; display: flex; flex-direction: column;
+    padding-top: 60px;
+  }
+
+  /* PROGRESS */
+  .progress-bar-track { height: 2px; background: var(--border); position: fixed; top: 60px; left: 0; right: 0; z-index: 99; }
+  .progress-bar-fill { height: 100%; background: var(--neon); transition: width 0.5s cubic-bezier(0.4,0,0.2,1); width: 0%; }
+  .progress-label { position: fixed; top: 70px; right: 40px; font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim); z-index: 99; }
+
+  /* SCREENS */
+  .screen { display: none; flex: 1; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* INTRO SCREEN */
+  .intro {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    align-items: flex-start; padding: 80px 15vw; position: relative; overflow: hidden;
+  }
+  .intro-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 60% 60% at 80% 50%, rgba(200,255,0,0.04) 0%, transparent 70%);
+  }
+  .intro-eyebrow { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--neon); margin-bottom: 24px; }
+  .intro-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(64px, 10vw, 130px); line-height: 0.88; color: var(--white); margin-bottom: 32px; }
+  .intro-title em { color: var(--neon); font-style: normal; display: block; }
+  .intro-sub { font-size: 16px; color: var(--dim); line-height: 1.9; max-width: 480px; margin-bottom: 48px; }
+  .intro-meta { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim); margin-bottom: 32px; display: flex; gap: 24px; }
+  .intro-meta span { color: var(--neon); }
+  .btn-start { background: var(--neon); color: var(--black); padding: 18px 48px; font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; border: none; cursor: none; display: inline-block; transition: opacity 0.2s; }
+  .btn-start:hover { opacity: 0.88; }
+
+  /* QUESTION SCREEN */
+  .question-screen {
+    flex: 1; display: flex; flex-direction: column; justify-content: center;
+    padding: 80px 15vw; min-height: calc(100vh - 60px);
+    animation: slideIn 0.4s ease;
+  }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+  .q-eyebrow { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 4px; text-transform: uppercase; color: var(--neon); margin-bottom: 20px; }
+  .q-text { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 5vw, 68px); color: var(--white); line-height: 1.05; margin-bottom: 12px; }
+  .q-sub { font-size: 14px; color: var(--dim); line-height: 1.8; margin-bottom: 48px; max-width: 500px; }
+
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 720px; }
+  .option {
+    background: var(--gray); border: 1px solid var(--border);
+    padding: 22px 24px; cursor: none; text-align: left;
+    transition: all 0.18s ease; position: relative; overflow: hidden;
+  }
+  .option::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: transparent; transition: background 0.2s; }
+  .option:hover { background: var(--mid); border-color: #333; }
+  .option:hover::before { background: var(--neon); }
+  .option.selected { background: var(--mid); border-color: var(--neon); }
+  .option.selected::before { background: var(--neon); }
+  .option-letter { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--neon); margin-bottom: 10px; display: block; opacity: 0.6; }
+  .option-text { font-size: 15px; color: var(--white); line-height: 1.5; font-weight: 500; }
+  .option-sub { font-size: 12px; color: var(--dim); margin-top: 6px; line-height: 1.5; }
+
+  .q-nav { display: flex; align-items: center; gap: 20px; margin-top: 48px; }
+  .btn-next { background: var(--neon); color: var(--black); padding: 14px 36px; font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; border: none; cursor: none; opacity: 0.35; pointer-events: none; transition: opacity 0.2s; }
+  .btn-next.ready { opacity: 1; pointer-events: all; }
+  .btn-next.ready:hover { opacity: 0.88; }
+  .btn-back-q { background: transparent; border: 1px solid var(--border); color: var(--dim); padding: 14px 24px; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; cursor: none; transition: all 0.2s; }
+  .btn-back-q:hover { border-color: var(--dim); color: var(--white); }
+
+  /* RESULT SCREEN */
+  .result-screen {
+    flex: 1; padding: 80px 15vw; animation: slideIn 0.5s ease;
+  }
+  .result-eyebrow { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--neon); margin-bottom: 20px; }
+  .result-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(56px, 8vw, 110px); line-height: 0.88; color: var(--white); margin-bottom: 32px; }
+  .result-title em { color: var(--neon); font-style: normal; }
+  .result-tagline { font-size: 16px; color: var(--dim); line-height: 1.9; max-width: 560px; margin-bottom: 64px; }
+
+  .result-bundle {
+    background: var(--gray); border-top: 2px solid var(--neon);
+    padding: 40px; margin-bottom: 32px; max-width: 760px;
+    position: relative;
+  }
+  .bundle-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--neon); margin-bottom: 12px; display: block; }
+  .bundle-name { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--white); line-height: 1; margin-bottom: 8px; }
+  .bundle-why { font-size: 14px; color: var(--dim); line-height: 1.9; margin-bottom: 28px; max-width: 560px; }
+  .bundle-items-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--dim); margin-bottom: 14px; }
+  .bundle-items { display: flex; flex-direction: column; gap: 8px; margin-bottom: 32px; }
+  .bundle-item { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--white); }
+  .bundle-item::before { content: ''; width: 4px; height: 4px; background: var(--neon); flex-shrink: 0; }
+  .bundle-pricing { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 28px; }
+  .bundle-price { font-family: 'Bebas Neue', sans-serif; font-size: 64px; color: var(--neon); line-height: 1; }
+  .bundle-was { font-family: 'Space Mono', monospace; font-size: 13px; color: var(--dim); text-decoration: line-through; padding-bottom: 10px; }
+  .bundle-save { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; padding-bottom: 12px; }
+  .btn-add { display: block; background: var(--neon); color: var(--black); padding: 16px; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; text-decoration: none; text-align: center; border: none; cursor: none; max-width: 340px; transition: opacity 0.2s; }
+  .btn-add:hover { opacity: 0.88; }
+
+  .result-also { margin-top: 48px; max-width: 760px; }
+  .also-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--dim); margin-bottom: 20px; }
+  .also-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; }
+  .also-card { background: var(--gray); padding: 20px; border-top: 1px solid var(--border); transition: background 0.2s; text-decoration: none; display: block; }
+  .also-card:hover { background: var(--mid); }
+  .also-num { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--neon); letter-spacing: 2px; margin-bottom: 6px; }
+  .also-name { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--white); margin-bottom: 4px; }
+  .also-price { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--dim); }
+
+  .result-retake { margin-top: 40px; }
+  .btn-retake { background: transparent; border: 1px solid var(--border); color: var(--dim); padding: 14px 28px; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; cursor: none; transition: all 0.2s; }
+  .btn-retake:hover { border-color: var(--dim); color: var(--white); }
+
+  @media (max-width: 768px) {
+    .nav { padding: 0 20px; }
+    .progress-label { right: 20px; }
+    .intro { padding: 60px 20px; }
+    .question-screen { padding: 60px 20px; }
+    .options { grid-template-columns: 1fr; }
+    .result-screen { padding: 60px 20px; }
+    .also-grid { grid-template-columns: 1fr; }
+    body { cursor: auto; }
+    .cursor, .cursor-ring { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav class="nav">
+  <a href="#" class="nav-logo">OPTIMA<span>XXING</span></a>
+  <a href="optimaxxing-about.html" class="nav-back">Back to Mission</a>
+</nav>
+
+<div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+<div class="progress-label" id="progressLabel"></div>
+
+<div class="quiz-shell">
+
+  <!-- INTRO -->
+  <div class="screen active" id="screen-intro">
+    <div class="intro">
+      <div class="intro-bg"></div>
+      <p class="intro-eyebrow">// Protocol Assessment</p>
+      <h1 class="intro-title">START YOUR<br><em>PROTOCOL.</em></h1>
+      <p class="intro-sub">Answer 5 questions. We'll identify the bundle that addresses your highest-priority variables and gives you the fastest measurable results.</p>
+      <div class="intro-meta">
+        <div>Questions: <span>5</span></div>
+        <div>Time: <span>Under 2 min</span></div>
+        <div>Result: <span>Your Bundle</span></div>
+      </div>
+      <button class="btn-start" onclick="startQuiz()">Begin Assessment &rarr;</button>
+    </div>
+  </div>
+
+  <!-- QUESTIONS rendered by JS -->
+  <div class="screen" id="screen-questions">
+    <div class="question-screen" id="questionContent"></div>
+  </div>
+
+  <!-- RESULT -->
+  <div class="screen" id="screen-result">
+    <div class="result-screen" id="resultContent"></div>
+  </div>
+
+</div>
+
+<script>
+  // Cursor
+  var cur = document.getElementById('cursor');
+  var ring = document.getElementById('cursorRing');
+  document.addEventListener('mousemove', function(e) {
+    cur.style.left = e.clientX + 'px'; cur.style.top = e.clientY + 'px';
+    ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px';
+  });
+
+  // QUIZ DATA
+  var questions = [
+    {
+      id: 'priority',
+      eyebrow: '// Question 01 of 05',
+      text: 'What is your single biggest priority right now?',
+      sub: 'Be honest. The protocol that moves your most important variable first will compound fastest.',
+      options: [
+        { letter: 'A', text: 'My face and skin', sub: 'Jawline definition, skin quality, facial appearance', value: 'face' },
+        { letter: 'B', text: 'My physical build and recovery', sub: 'Muscle, strength, how my body performs and looks', value: 'gym' },
+        { letter: 'C', text: 'My mental performance', sub: 'Focus, energy, cognitive output, stress management', value: 'mind' },
+        { letter: 'D', text: 'My overall presentation', sub: 'How I look to others — grooming, posture, style', value: 'style' },
+      ]
+    },
+    {
+      id: 'problem',
+      eyebrow: '// Question 02 of 05',
+      text: 'What is the problem you feel most held back by?',
+      sub: 'Choose the one that, if fixed, would move the needle most for you.',
+      options: [
+        { letter: 'A', text: 'I don\'t sleep well', sub: 'Poor quality sleep, waking up tired, low energy by midday', value: 'sleep' },
+        { letter: 'B', text: 'My posture and frame are weak', sub: 'Slouching, rounded shoulders, lack of physical presence', value: 'frame' },
+        { letter: 'C', text: 'My skin and face could be better', sub: 'Acne, dullness, puffiness, or lack of definition', value: 'face' },
+        { letter: 'D', text: 'I\'m exposed to too many toxins', sub: 'Concerned about chemicals in food, water, personal care', value: 'clean' },
+      ]
+    },
+    {
+      id: 'goal',
+      eyebrow: '// Question 03 of 05',
+      text: 'What outcome do you want in 30 days?',
+      sub: 'Specificity matters. Pick the outcome you would actually measure.',
+      options: [
+        { letter: 'A', text: 'Visibly better skin and facial definition', sub: 'People notice the change in your face', value: 'face' },
+        { letter: 'B', text: 'Deeper sleep and more consistent energy', sub: 'Wake up recovered, no afternoon crash', value: 'sleep' },
+        { letter: 'C', text: 'Sharper mental clarity and daily focus', sub: 'High output work sessions, less brain fog', value: 'mind' },
+        { letter: 'D', text: 'Better physical presence and grooming', sub: 'Posture, jawline, style — the total package', value: 'frame' },
+      ]
+    },
+    {
+      id: 'budget',
+      eyebrow: '// Question 04 of 05',
+      text: 'What is your investment level for this protocol?',
+      sub: 'Every tier delivers real results. Higher investment means faster compounding across more variables.',
+      options: [
+        { letter: 'A', text: 'Entry — Under $75', sub: 'Start the protocol with the highest-impact individual tools', value: 'entry' },
+        { letter: 'B', text: 'Mid — $75 to $150', sub: 'A complete starter kit covering the core variables', value: 'mid' },
+        { letter: 'C', text: 'Pro — $150 to $250', sub: 'Clinical-grade tools and the full protocol system', value: 'pro' },
+        { letter: 'D', text: 'Full Stack — $200+', sub: 'Run multiple protocols simultaneously for maximum compound', value: 'full' },
+      ]
+    },
+    {
+      id: 'commitment',
+      eyebrow: '// Question 05 of 05',
+      text: 'How much time per day will you commit to the protocol?',
+      sub: 'Consistency beats intensity. Choose what you will actually sustain.',
+      options: [
+        { letter: 'A', text: '5 minutes', sub: 'Quick daily habit, fast execution, zero friction', value: 'minimal' },
+        { letter: 'B', text: '10–15 minutes', sub: 'A focused morning or evening ritual', value: 'light' },
+        { letter: 'C', text: '20–30 minutes', sub: 'A dedicated protocol session you take seriously', value: 'medium' },
+        { letter: 'D', text: '30+ minutes', sub: 'Full system optimization — you are committed', value: 'high' },
+      ]
+    }
+  ];
+
+  // BUNDLES
+  var bundles = {
+    face_entry: {
+      name: 'FACEMAXX STARTER KIT',
+      tag: 'Bundle 02 · Facemaxx',
+      why: 'Your answers point to facial optimization as the highest-priority variable. The Starter Kit gives you the three tools with the best results-to-effort ratio — daily habits you can complete in under 10 minutes that produce visible improvement within 2 weeks.',
+      items: ['Rose Quartz Gua Sha Stone', 'Cryo Face Roller', 'Collagen Eye Patches (60 pairs)'],
+      price: '$49', was: '$82', save: 'save $33',
+      related: [
+        { num: '// 03', name: 'FACEMAXX PRO KIT', price: '$122' },
+        { num: '// 04', name: 'SLEEPMAXX NIGHT PROTOCOL', price: '$72' },
+        { num: '// 09', name: 'CLEANMAXX CLEAN LIVING KIT', price: '$139' },
+      ]
+    },
+    face_mid: {
+      name: 'FACEMAXX PRO KIT',
+      tag: 'Bundle 03 · Facemaxx Pro',
+      why: 'Your answers identify facial optimization as the priority and your investment level unlocks clinical-grade tools. The LED mask, facial steamer, and derma roller work as a system — each one amplifying the effect of the others. This is not skincare. This is facial engineering.',
+      items: ['LED Face Mask (630nm + 830nm)', 'Facial Steamer (compact)', 'Derma Roller (0.25mm)'],
+      price: '$122', was: '$169', save: 'save $47',
+      related: [
+        { num: '// 02', name: 'FACEMAXX STARTER KIT', price: '$49' },
+        { num: '// 04', name: 'SLEEPMAXX NIGHT PROTOCOL', price: '$72' },
+        { num: '// 06', name: 'FRAMEMAXX DAILY KIT', price: '$57' },
+      ]
+    },
+    sleep: {
+      name: 'SLEEPMAXX NIGHT PROTOCOL',
+      tag: 'Bundle 04 · Sleepmaxx',
+      why: 'Your answers make sleep the clear priority variable. Everything else you are trying to optimize — skin, focus, recovery, hormonal function — is downstream of sleep quality. Fix the 8 hours and the other variables start moving on their own.',
+      items: ['Mouth Tape (60-night supply)', 'Silk Sleep Mask', 'Blue Light Blocking Glasses', 'Magnesium Glycinate (60 capsules)'],
+      price: '$72', was: '$106', save: 'save $34',
+      related: [
+        { num: '// 01', name: 'FULL OPTIMIZATION STARTER', price: '$199' },
+        { num: '// 06', name: 'MINDMAXX FOCUS PROTOCOL', price: '$96' },
+        { num: '// 09', name: 'CLEANMAXX CLEAN LIVING KIT', price: '$139' },
+      ]
+    },
+    gym: {
+      name: 'GYMMAXX RECOVERY STACK',
+      tag: 'Bundle 05 · Gymmaxx',
+      why: 'Your answers identify physical performance and recovery as the priority. The recovery stack targets the 23 hours that determine whether training actually produces adaptation. Most men optimize the gym hour and ignore everything else — this corrects that.',
+      items: ['Compact Massage Gun', 'Creatine Monohydrate (500g)', 'Lacrosse Massage Ball Set (3)', 'Resistance Bands Set'],
+      price: '$114', was: '$161', save: 'save $47',
+      related: [
+        { num: '// 04', name: 'SLEEPMAXX NIGHT PROTOCOL', price: '$72' },
+        { num: '// 06', name: 'FRAMEMAXX DAILY KIT', price: '$57' },
+        { num: '// 01', name: 'FULL OPTIMIZATION STARTER', price: '$199' },
+      ]
+    },
+    frame: {
+      name: 'FRAMEMAXX DAILY KIT',
+      tag: 'Bundle 06 · Framemaxx',
+      why: 'Your answers indicate frame and physical presence as the primary variable. Three problems, three tools, one daily protocol. Posture, grip, jaw — each correctable, each compounding. Frame is the variable that communicates before you speak.',
+      items: ['Smart Posture Corrector Brace', 'Grip Strengthener (progressive resistance)', 'Jawline Trainer / Mastic Gum (2-pack)'],
+      price: '$57', was: '$78', save: 'save $21',
+      related: [
+        { num: '// 02', name: 'FACEMAXX STARTER KIT', price: '$49' },
+        { num: '// 05', name: 'GYMMAXX RECOVERY STACK', price: '$114' },
+        { num: '// 07', name: 'STYLEMAXX GROOMING KIT', price: '$115' },
+      ]
+    },
+    mind: {
+      name: 'MINDMAXX FOCUS PROTOCOL',
+      tag: 'Bundle 08 · Mindmaxx',
+      why: 'Your answers point to cognitive performance as the highest-priority variable. Focus is not a personality trait — it is a physiological state. This stack addresses the inputs (mushroom coffee, nootropics), the environment (blue light blocking), and the system (structured focus intervals).',
+      items: ['Mushroom Coffee — Lion\'s Mane + Chaga (30 servings)', 'Nootropic Stack (L-Theanine + Alpha GPC)', 'Blue Light Blocking Glasses (clear lens)', 'Mechanical Focus Timer'],
+      price: '$96', was: '$144', save: 'save $48',
+      related: [
+        { num: '// 04', name: 'SLEEPMAXX NIGHT PROTOCOL', price: '$72' },
+        { num: '// 09', name: 'CLEANMAXX CLEAN LIVING KIT', price: '$139' },
+        { num: '// 01', name: 'FULL OPTIMIZATION STARTER', price: '$199' },
+      ]
+    },
+    style: {
+      name: 'STYLEMAXX GROOMING KIT',
+      tag: 'Bundle 07 · Stylemaxx',
+      why: 'Your answers identify presentation as the current priority. Physical optimization means nothing if the presentation is sloppy. This kit handles the three details most men overlook — clothes, beard, shoes — and builds the daily 10-minute ritual that separates men who look put together from men who just work out.',
+      items: ['Compact Clothes Steamer', 'Beard Grooming Kit (comb + oil + balm)', 'Shoe Cleaning Kit (5-piece)', 'Fabric Shaver / Lint Remover'],
+      price: '$115', was: '$166', save: 'save $51',
+      related: [
+        { num: '// 06', name: 'FRAMEMAXX DAILY KIT', price: '$57' },
+        { num: '// 02', name: 'FACEMAXX STARTER KIT', price: '$49' },
+        { num: '// 01', name: 'FULL OPTIMIZATION STARTER', price: '$199' },
+      ]
+    },
+    clean: {
+      name: 'CLEANMAXX CLEAN LIVING KIT',
+      tag: 'Bundle 09 · Cleanmaxx',
+      why: 'Your answers identify environmental toxin exposure as the priority variable. Every other optimization protocol you run has a ceiling set by what you\'re absorbing daily — BPA from plastic, PFAS from cookware, microplastics from bottles, heavy metals from tap water. This kit removes the interference.',
+      items: ['Glass Food Storage Container Set (10-piece)', 'Stainless Steel Water Bottle (insulated, 32oz)', 'Water Filter Pitcher', 'Natural Aluminum-Free Deodorant (2-pack)', 'Beeswax Food Wraps'],
+      price: '$139', was: '$195', save: 'save $56',
+      related: [
+        { num: '// 04', name: 'SLEEPMAXX NIGHT PROTOCOL', price: '$72' },
+        { num: '// 08', name: 'MINDMAXX FOCUS PROTOCOL', price: '$96' },
+        { num: '// 01', name: 'FULL OPTIMIZATION STARTER', price: '$199' },
+      ]
+    },
+    full: {
+      name: 'FULL OPTIMIZATION STARTER',
+      tag: 'Bundle 01 · Full Stack — Most Popular',
+      why: 'Your answers indicate you are ready to run the complete system. One tool from each of the seven protocols gives you immediate traction across all variables simultaneously. The compound effect of addressing face, sleep, training, frame, style, mind, and environment at once is why this is the most popular bundle — partial optimization has a ceiling.',
+      items: ['LED Face Mask (Facemaxx)', 'Mouth Tape + Silk Sleep Mask (Sleepmaxx)', 'Resistance Bands Set (Gymmaxx)', 'Posture Corrector (Framemaxx)', 'Clothes Steamer (Stylemaxx)', 'Mushroom Coffee 30-Day Supply (Mindmaxx)'],
+      price: '$199', was: '$288', save: 'save $89',
+      related: [
+        { num: '// 03', name: 'FACEMAXX PRO KIT', price: '$122' },
+        { num: '// 05', name: 'GYMMAXX RECOVERY STACK', price: '$114' },
+        { num: '// 09', name: 'CLEANMAXX CLEAN LIVING KIT', price: '$139' },
+      ]
+    }
+  };
+
+  // STATE
+  var currentQ = 0;
+  var answers = {};
+
+  function startQuiz() {
+    showScreen('questions');
+    renderQuestion(0);
+    updateProgress();
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+    document.getElementById('screen-' + id).classList.add('active');
+  }
+
+  function updateProgress() {
+    var pct = currentQ === 0 ? 0 : (currentQ / questions.length) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    if (currentQ === 0) {
+      document.getElementById('progressLabel').textContent = '';
+    } else {
+      document.getElementById('progressLabel').textContent = currentQ + ' / ' + questions.length;
+    }
+  }
+
+  function renderQuestion(idx) {
+    var q = questions[idx];
+    var selected = answers[q.id] || null;
+    var html = '<p class="q-eyebrow">' + q.eyebrow + '</p>';
+    html += '<h2 class="q-text">' + q.text + '</h2>';
+    html += '<p class="q-sub">' + q.sub + '</p>';
+    html += '<div class="options">';
+    q.options.forEach(function(opt) {
+      var sel = selected === opt.value ? ' selected' : '';
+      html += '<button class="option' + sel + '" onclick="selectOption(\'' + q.id + '\', \'' + opt.value + '\', this)">';
+      html += '<span class="option-letter">— ' + opt.letter + '</span>';
+      html += '<div class="option-text">' + opt.text + '</div>';
+      html += '<div class="option-sub">' + opt.sub + '</div>';
+      html += '</button>';
+    });
+    html += '</div>';
+    html += '<div class="q-nav">';
+    if (idx > 0) html += '<button class="btn-back-q" onclick="goBack()">← Back</button>';
+    html += '<button class="btn-next' + (selected ? ' ready' : '') + '" id="btnNext" onclick="nextQuestion()">Continue →</button>';
+    html += '</div>';
+    var container = document.getElementById('questionContent');
+    container.innerHTML = html;
+    container.style.animation = 'none';
+    container.offsetHeight; // reflow
+    container.style.animation = '';
+  }
+
+  function selectOption(qid, value, el) {
+    answers[qid] = value;
+    document.querySelectorAll('.option').forEach(function(o) { o.classList.remove('selected'); });
+    el.classList.add('selected');
+    var btn = document.getElementById('btnNext');
+    if (btn) { btn.classList.add('ready'); }
+  }
+
+  function nextQuestion() {
+    var q = questions[currentQ];
+    if (!answers[q.id]) return;
+    currentQ++;
+    updateProgress();
+    if (currentQ >= questions.length) {
+      showResult();
+    } else {
+      renderQuestion(currentQ);
+    }
+  }
+
+  function goBack() {
+    if (currentQ > 0) {
+      currentQ--;
+      updateProgress();
+      renderQuestion(currentQ);
+    }
+  }
+
+  function showResult() {
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('progressLabel').textContent = 'Complete';
+    showScreen('result');
+    var bundle = pickBundle();
+    renderResult(bundle);
+  }
+
+  function pickBundle() {
+    var p = answers.priority;
+    var prob = answers.problem;
+    var goal = answers.goal;
+    var budget = answers.budget;
+    var commit = answers.commitment;
+
+    // Full stack override
+    if (budget === 'full' || (budget === 'pro' && commit === 'high')) return bundles.full;
+
+    // Sleep dominates if problem + priority align
+    if (prob === 'sleep' || goal === 'sleep') return bundles.sleep;
+
+    // Clean living
+    if (prob === 'clean') return bundles.clean;
+
+    // Face
+    if (p === 'face' || goal === 'face') {
+      if (budget === 'pro' || budget === 'mid') return bundles.face_mid;
+      return bundles.face_entry;
+    }
+
+    // Gym/recovery
+    if (p === 'gym') return bundles.gym;
+
+    // Mind
+    if (p === 'mind' || goal === 'mind') return bundles.mind;
+
+    // Frame / style / presentation
+    if (p === 'style' || prob === 'frame' || goal === 'frame') {
+      if (p === 'style') return bundles.style;
+      return bundles.frame;
+    }
+
+    // Default fallback
+    return bundles.full;
+  }
+
+  function renderResult(b) {
+    var html = '';
+    html += '<p class="result-eyebrow">// Your Protocol Stack</p>';
+    html += '<h2 class="result-title">YOUR BUNDLE<br>IS <em>' + (b.name.split(' ')[0]) + '.</em></h2>';
+    html += '<p class="result-tagline">Based on your answers, this is the stack that addresses your highest-priority variable with the fastest compound results. Start here. Add to the system once it\'s running.</p>';
+    html += '<div class="result-bundle">';
+    html += '<span class="bundle-label">// ' + b.tag + '</span>';
+    html += '<div class="bundle-name">' + b.name + '</div>';
+    html += '<p class="bundle-why">' + b.why + '</p>';
+    html += '<div class="bundle-items-label">What\'s included</div>';
+    html += '<div class="bundle-items">';
+    b.items.forEach(function(item) { html += '<div class="bundle-item">' + item + '</div>'; });
+    html += '</div>';
+    html += '<div class="bundle-pricing"><div class="bundle-price">' + b.price + '</div><div class="bundle-was">' + b.was + '</div><div class="bundle-save">' + b.save + '</div></div>';
+    html += '<a href="optimaxxing-bundles.html" class="btn-add">Add To Protocol →</a>';
+    html += '</div>';
+
+    if (b.related && b.related.length) {
+      html += '<div class="result-also">';
+      html += '<p class="also-label">// You may also want</p>';
+      html += '<div class="also-grid">';
+      b.related.forEach(function(r) {
+        html += '<a href="optimaxxing-bundles.html" class="also-card">';
+        html += '<div class="also-num">' + r.num + '</div>';
+        html += '<div class="also-name">' + r.name + '</div>';
+        html += '<div class="also-price">' + r.price + '</div>';
+        html += '</a>';
+      });
+      html += '</div></div>';
+    }
+
+    html += '<div class="result-retake"><button class="btn-retake" onclick="retake()">Retake Assessment</button></div>';
+    document.getElementById('resultContent').innerHTML = html;
+  }
+
+  function retake() {
+    currentQ = 0;
+    answers = {};
+    updateProgress();
+    document.getElementById('progressLabel').textContent = '';
+    document.getElementById('progressFill').style.width = '0%';
+    showScreen('intro');
+  }
+</script>
+</body>
+</html>

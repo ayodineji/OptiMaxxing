@@ -1,0 +1,6 @@
+{
+  "sections": {
+    "main": { "type": "optimaxxing-bundles", "settings": {} }
+  },
+  "order": ["main"]
+}

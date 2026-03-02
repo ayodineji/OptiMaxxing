@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "optimaxxing-collection",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

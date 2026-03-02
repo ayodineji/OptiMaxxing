@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPTIMAXXING — Homepage</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--black:#050505;--neon:#C8FF00;--white:#F5F5F5;--gray:#141414;--mid:#202020;--dim:#888;--border:#1e1e1e;}
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--black);color:var(--white);font-family:'Inter',sans-serif;overflow-x:hidden;}
+  h1,h2,h3{color:var(--white);}
+  p,span,label{color:var(--dim);}
+  a{color:inherit;text-decoration:none;}
+
+  /* NAV */
+  .om-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:0 48px;height:64px;background:rgba(5,5,5,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+  .om-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:var(--neon);flex-shrink:0;}
+  .om-logo .rest{color:var(--white);}
+  .om-nav-center{position:relative;display:flex;align-items:center;}
+  .om-proto-btn{background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);padding:0 16px;height:64px;display:flex;align-items:center;gap:8px;transition:color 0.2s;}
+  .om-proto-btn:hover,.om-proto-btn.open{color:var(--neon);}
+  .chevron{font-size:8px;transition:transform 0.2s;}
+  .om-proto-btn.open .chevron{transform:rotate(180deg);}
+  .om-drop{position:absolute;top:64px;left:50%;transform:translateX(-50%);background:#080808;border:1px solid var(--border);border-top:2px solid var(--neon);display:none;min-width:220px;z-index:1001;box-shadow:0 16px 48px rgba(0,0,0,0.6);}
+  .om-drop.open{display:block;}
+  .om-drop a{display:flex;align-items:center;gap:12px;padding:14px 20px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--border);transition:background 0.15s,color 0.15s;}
+  .om-drop a:last-child{border-bottom:none;}
+  .om-drop a:hover{background:var(--gray);color:var(--neon);}
+  .pnum{color:var(--neon);font-size:9px;opacity:0.6;}
+  .om-nav-right{display:flex;align-items:center;gap:14px;}
+  .om-cart-btn{position:relative;background:none;border:none;cursor:pointer;color:var(--white);padding:8px;display:flex;align-items:center;transition:color 0.2s;}
+  .om-cart-btn:hover{color:var(--neon);}
+  .om-cart-btn svg{width:22px;height:22px;stroke:currentColor;}
+  .om-badge{position:absolute;top:1px;right:1px;background:var(--neon);color:var(--black);font-family:'Space Mono',monospace;font-size:8px;font-weight:700;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .om-badge.hidden{display:none;}
+  .om-nav-cta{background:var(--neon);color:var(--black);padding:10px 20px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+  .om-hamburger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;padding:8px;}
+  .om-hamburger span{display:block;width:22px;height:1.5px;background:var(--white);transition:all 0.25s;}
+  .om-hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+  .om-hamburger.open span:nth-child(2){opacity:0;}
+  .om-hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+  .om-mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;background:#080808;border-bottom:1px solid var(--border);z-index:999;padding:8px 0;}
+  .om-mobile-menu.open{display:block;}
+  .om-mobile-menu a{display:flex;align-items:center;gap:12px;padding:14px 20px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--border);}
+  .om-mobile-menu a:last-child{border-bottom:none;}
+  .om-mobile-menu a:hover{color:var(--neon);}
+
+  /* CART DRAWER */
+  .om-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1999;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+  .om-overlay.open{opacity:1;pointer-events:all;}
+  .om-drawer{position:fixed;top:0;right:0;width:400px;max-width:100vw;height:100vh;background:#080808;border-left:1px solid var(--border);z-index:2000;display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);}
+  .om-drawer.open{transform:translateX(0);}
+  .om-drawer-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);}
+  .om-drawer-head h2{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);letter-spacing:2px;}
+  .om-drawer-head h2 span{color:var(--neon);}
+  .om-drawer-x{background:none;border:none;cursor:pointer;color:var(--dim);font-size:22px;padding:4px;}
+  .om-drawer-body{flex:1;overflow-y:auto;padding:16px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;}
+  .om-drawer-body p{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);}
+  .om-drawer-foot{padding:20px 24px;border-top:1px solid var(--border);}
+  .om-subtotal-row{display:flex;justify-content:space-between;margin-bottom:16px;}
+  .om-subtotal-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);}
+  .om-subtotal-price{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--neon);}
+  .om-checkout{display:block;width:100%;padding:15px;text-align:center;background:var(--neon);color:var(--black);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;}
+
+  /* HERO */
+  .om-hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:130px 48px 80px;position:relative;overflow:hidden;}
+  .om-hero::before{content:'';position:absolute;top:-200px;right:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(200,255,0,0.055) 0%,transparent 65%);pointer-events:none;}
+  .hero-tag{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--neon);text-transform:uppercase;margin-bottom:20px;opacity:0;animation:fadeUp 0.6s 0.2s forwards;}
+  .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,13vw,160px);line-height:0.9;color:var(--white);margin-bottom:32px;opacity:0;animation:fadeUp 0.7s 0.35s forwards;}
+  .hero-title .accent{color:var(--neon);display:block;}
+  .hero-sub{font-size:16px;color:var(--dim);max-width:500px;line-height:1.8;margin-bottom:48px;opacity:0;animation:fadeUp 0.7s 0.5s forwards;}
+  .hero-btns{display:flex;gap:14px;flex-wrap:wrap;opacity:0;animation:fadeUp 0.7s 0.65s forwards;}
+  .btn-primary{background:var(--neon);color:var(--black);padding:15px 40px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;display:inline-block;transition:opacity 0.2s;}
+  .btn-primary:hover{opacity:0.88;}
+  .btn-ghost{background:transparent;color:var(--white);border:1px solid #2a2a2a;padding:15px 40px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;display:inline-block;transition:border-color 0.2s,color 0.2s;}
+  .btn-ghost:hover{border-color:var(--neon);color:var(--neon);}
+  .hero-stats{display:flex;gap:48px;margin-top:80px;padding-top:40px;border-top:1px solid var(--border);width:100%;flex-wrap:wrap;opacity:0;animation:fadeUp 0.7s 0.8s forwards;}
+  .stat-item{display:flex;flex-direction:column;gap:4px;}
+  .stat-num{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--neon);line-height:1;}
+  .stat-label{font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;}
+
+  /* TICKER */
+  .om-ticker{background:var(--neon);padding:12px 0;overflow:hidden;white-space:nowrap;}
+  .om-ticker-track{display:inline-block;animation:ticker 35s linear infinite;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--black);text-transform:uppercase;}
+  @keyframes ticker{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* CALLOUT */
+  .om-callout{background:var(--neon);padding:56px 48px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;}
+  .callout-text{font-family:'Bebas Neue',sans-serif;font-size:clamp(24px,4vw,48px);color:var(--black);line-height:1.05;max-width:700px;}
+  .callout-sub{font-size:12px;color:rgba(0,0,0,0.4);font-family:'Space Mono',monospace;letter-spacing:2px;text-transform:uppercase;max-width:220px;}
+
+  /* PROTOCOL TABS */
+  .om-proto-tabs{padding:0 48px;background:var(--gray);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;}
+  .om-proto-tabs::-webkit-scrollbar{display:none;}
+  .proto-tab{padding:18px 24px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);cursor:pointer;white-space:nowrap;background:none;border:none;border-bottom:2px solid transparent;transition:color 0.2s,border-color 0.2s;flex-shrink:0;}
+  .proto-tab.active,.proto-tab:hover{color:var(--neon);border-bottom-color:var(--neon);}
+  .proto-tab.clean.active,.proto-tab.clean:hover{color:#00CFFF;border-bottom-color:#00CFFF;}
+
+  /* PRODUCTS */
+  .om-products{padding:72px 48px;}
+  .section-tag{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--neon);text-transform:uppercase;margin-bottom:12px;display:block;}
+  .section-heading{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5.5vw,72px);line-height:1;color:var(--white);margin-bottom:14px;}
+  .section-body{font-size:14px;color:var(--dim);max-width:580px;line-height:1.75;margin-bottom:24px;}
+  .view-all-link{display:inline-block;margin-bottom:36px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--neon);border-bottom:1px solid var(--neon);padding-bottom:2px;transition:opacity 0.2s;}
+  .view-all-link:hover{opacity:0.7;}
+  .proto-panel{display:none;}
+  .proto-panel.active{display:block;}
+  .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:2px;}
+
+  /* CARDS */
+  .product-card{background:var(--gray);padding:28px 24px;display:flex;flex-direction:column;transition:background 0.2s;}
+  .product-card:hover{background:var(--mid);}
+  .product-card.hero-card{background:var(--neon);}
+  .product-card.hero-card .card-badge{background:var(--black);color:var(--neon);}
+  .product-card.hero-card .card-name{color:var(--black);}
+  .product-card.hero-card .card-desc{color:rgba(0,0,0,0.5);}
+  .product-card.hero-card .card-price{color:var(--black);}
+  .product-card.hero-card .card-link{color:var(--black);border-color:var(--black);}
+  .product-card.hero-card .card-link:hover{background:var(--black);color:var(--neon);}
+  .card-badge{display:inline-block;align-self:flex-start;margin-bottom:18px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;padding:4px 10px;background:var(--mid);color:var(--neon);text-transform:uppercase;}
+  .card-img-placeholder{width:100%;aspect-ratio:1;background:var(--mid);margin-bottom:18px;display:flex;align-items:center;justify-content:center;}
+  .card-img-placeholder span{font-family:'Space Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;}
+  .card-name{font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1.1;color:var(--white);margin-bottom:10px;flex:1;}
+  .card-desc{font-size:12px;color:var(--dim);line-height:1.7;margin-bottom:18px;}
+  .card-price{font-family:'Space Mono',monospace;font-size:18px;font-weight:700;color:var(--neon);}
+  .card-link{display:block;width:100%;margin-top:14px;padding:11px;background:transparent;border:1px solid #2a2a2a;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-align:center;color:var(--white);transition:background 0.2s,border-color 0.2s,color 0.2s;}
+  .product-card:not(.hero-card) .card-link:hover{background:var(--neon);border-color:var(--neon);color:var(--black);}
+
+  /* HOW */
+  .om-how{padding:96px 48px;background:#060606;}
+  .steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:48px;margin-top:56px;}
+  .step-num{font-family:'Bebas Neue',sans-serif;font-size:80px;color:#181818;line-height:1;margin-bottom:14px;}
+  .step-title{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);margin-bottom:10px;}
+  .step-desc{font-size:13px;color:var(--dim);line-height:1.75;}
+
+  /* PROOF */
+  .om-proof{padding:96px 48px;}
+  .proof-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:2px;margin-top:56px;}
+  .proof-card{background:var(--gray);padding:28px 24px;}
+  .proof-stars{color:var(--neon);font-size:13px;letter-spacing:3px;margin-bottom:14px;}
+  .proof-quote{font-size:14px;line-height:1.75;color:var(--white);margin-bottom:18px;font-style:italic;}
+  .proof-who{font-family:'Space Mono',monospace;font-size:9px;color:var(--neon);letter-spacing:2px;text-transform:uppercase;}
+
+  /* FOOTER */
+  .om-footer{padding:40px 48px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+  .footer-brand{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;color:var(--neon);}
+  .footer-links{display:flex;gap:24px;flex-wrap:wrap;}
+  .footer-links a{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);transition:color 0.2s;}
+  .footer-links a:hover{color:var(--neon);}
+  .footer-copy{font-size:11px;color:var(--dim);}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+  /* MOBILE */
+  @media(max-width:768px){
+    .om-nav{padding:0 16px;}
+    .om-nav-center{display:none;}
+    .om-nav-cta{display:none;}
+    .om-hamburger{display:flex;}
+    .om-hero{padding:100px 20px 56px;}
+    .hero-stats{gap:20px;margin-top:48px;}
+    .stat-num{font-size:40px;}
+    .om-callout{flex-direction:column;padding:40px 20px;}
+    .om-proto-tabs{padding:0 16px;}
+    .om-products,.om-how,.om-proof{padding:56px 20px;}
+    .product-grid{grid-template-columns:1fr;}
+    .steps-grid{gap:32px;}
+    .om-footer{flex-direction:column;padding:28px 20px;text-align:center;}
+    .footer-links{justify-content:center;}
+    .om-drawer{width:100vw;}
+  }
+</style>
+</head>
+<body>
+
+<!-- OVERLAY -->
+<div class="om-overlay" id="omOverlay" onclick="omCloseCart()"></div>
+
+<!-- CART DRAWER -->
+<div class="om-drawer" id="omDrawer">
+  <div class="om-drawer-head">
+    <h2>YOUR <span>PROTOCOL</span></h2>
+    <button class="om-drawer-x" onclick="omCloseCart()">&times;</button>
+  </div>
+  <div class="om-drawer-body">
+    <p>Your protocol is empty.</p>
+    <a href="#protocols" onclick="omCloseCart()" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--neon);border-bottom:1px solid var(--neon);padding-bottom:2px;">Start building &rarr;</a>
+  </div>
+  <div class="om-drawer-foot">
+    <div class="om-subtotal-row">
+      <span class="om-subtotal-label">Subtotal</span>
+      <span class="om-subtotal-price">$0.00</span>
+    </div>
+    <a href="#" class="om-checkout">Checkout &rarr;</a>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="om-nav">
+  <a href="#" class="om-logo">OPTIMA<span class="rest">XXING</span></a>
+  <div class="om-nav-center">
+    <button class="om-proto-btn" id="omProtoBtn" onclick="omToggleDrop()">
+      Protocols <span class="chevron">&#9660;</span>
+    </button>
+    <div class="om-drop" id="omDrop">
+      <a href="#protocols" onclick="omShowPanel('facemaxx',document.querySelector('[data-p=facemaxx]'))"><span class="pnum">01</span>Facemaxx</a>
+      <a href="#protocols" onclick="omShowPanel('sleepmaxx',document.querySelector('[data-p=sleepmaxx]'))"><span class="pnum">02</span>Sleepmaxx</a>
+      <a href="#protocols" onclick="omShowPanel('gymmaxx',document.querySelector('[data-p=gymmaxx]'))"><span class="pnum">03</span>Gymmaxx</a>
+      <a href="#protocols" onclick="omShowPanel('framemaxx',document.querySelector('[data-p=framemaxx]'))"><span class="pnum">04</span>Framemaxx</a>
+      <a href="#protocols" onclick="omShowPanel('stylemaxx',document.querySelector('[data-p=stylemaxx]'))"><span class="pnum">05</span>Stylemaxx</a>
+      <a href="#protocols" onclick="omShowPanel('mindmaxx',document.querySelector('[data-p=mindmaxx]'))"><span class="pnum">06</span>Mindmaxx</a>
+      <a href="#protocols" onclick="omShowPanel('cleanmaxx',document.querySelector('[data-p=cleanmaxx]'))" style="color:#00CFFF"><span class="pnum" style="color:#00CFFF">07</span>Cleanmaxx</a>
+      <a href="optimaxxing-bundles.html" style="border-top:1px solid #1e1e1e;margin-top:4px;padding-top:18px"><span class="pnum">→</span>Bundles</a>
+      <a href="optimaxxing-quiz.html"><span class="pnum">→</span>Take The Quiz</a>
+      <a href="optimaxxing-about.html"><span class="pnum">→</span>Mission</a>
+    </div>
+  </div>
+  <div class="om-nav-right">
+    <button class="om-cart-btn" onclick="omOpenCart()" aria-label="Open cart">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 01-8 0"/>
+      </svg>
+      <span class="om-badge hidden" id="omBadge">0</span>
+    </button>
+    <a href="optimaxxing-quiz.html" class="om-nav-cta">Start The Protocol</a>
+    <button class="om-hamburger" id="omBurger" onclick="omToggleMobile()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="om-mobile-menu" id="omMobileMenu">
+  <a href="#protocols" onclick="omShowPanel('facemaxx',document.querySelector('[data-p=facemaxx]'));omToggleMobile()"><span class="pnum">01</span>Facemaxx</a>
+  <a href="#protocols" onclick="omShowPanel('sleepmaxx',document.querySelector('[data-p=sleepmaxx]'));omToggleMobile()"><span class="pnum">02</span>Sleepmaxx</a>
+  <a href="#protocols" onclick="omShowPanel('gymmaxx',document.querySelector('[data-p=gymmaxx]'));omToggleMobile()"><span class="pnum">03</span>Gymmaxx</a>
+  <a href="#protocols" onclick="omShowPanel('framemaxx',document.querySelector('[data-p=framemaxx]'));omToggleMobile()"><span class="pnum">04</span>Framemaxx</a>
+  <a href="#protocols" onclick="omShowPanel('stylemaxx',document.querySelector('[data-p=stylemaxx]'));omToggleMobile()"><span class="pnum">05</span>Stylemaxx</a>
+  <a href="#protocols" onclick="omShowPanel('mindmaxx',document.querySelector('[data-p=mindmaxx]'));omToggleMobile()"><span class="pnum">06</span>Mindmaxx</a>
+  <a href="#protocols" onclick="omShowPanel('cleanmaxx',document.querySelector('[data-p=cleanmaxx]'));omToggleMobile()" style="color:#00CFFF"><span class="pnum" style="color:#00CFFF">07</span>Cleanmaxx</a>
+  <a href="optimaxxing-bundles.html"><span class="pnum">→</span>Bundles</a>
+  <a href="optimaxxing-quiz.html"><span class="pnum">→</span>Take The Quiz</a>
+  <a href="optimaxxing-about.html"><span class="pnum">→</span>Mission</a>
+</div>
+
+<!-- HERO -->
+<section class="om-hero">
+  <p class="hero-tag">// 7-Protocol Self-Optimization System</p>
+  <h1 class="hero-title">MOG THE<br><span class="accent">ROOM.</span></h1>
+  <p class="hero-sub">You optimize your training. Your nutrition. Your sleep. The men who are actually winning optimize everything. Face, frame, style, mind, environment. These are the tools.</p>
+  <div class="hero-btns">
+    <a href="#protocols" class="btn-primary">View All Protocols</a>
+    <a href="#proof" class="btn-ghost">See Results</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item"><span class="stat-num">7</span><span class="stat-label">Protocols</span></div>
+    <div class="stat-item"><span class="stat-num">55+</span><span class="stat-label">Tools</span></div>
+    <div class="stat-item"><span class="stat-num">CE</span><span class="stat-label">Certified</span></div>
+    <div class="stat-item"><span class="stat-num">30</span><span class="stat-label">Day Guarantee</span></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="om-ticker">
+  <span class="om-ticker-track">FACEMAXX &nbsp;&middot;&nbsp; SLEEPMAXX &nbsp;&middot;&nbsp; GYMMAXX &nbsp;&middot;&nbsp; FRAMEMAXX &nbsp;&middot;&nbsp; STYLEMAXX &nbsp;&middot;&nbsp; MINDMAXX &nbsp;&middot;&nbsp; CLEANMAXX &nbsp;&middot;&nbsp; OPTIMIZE EVERYTHING &nbsp;&middot;&nbsp; MOG THE COMPETITION &nbsp;&middot;&nbsp; SERIOUS MEN USE SERIOUS TOOLS &nbsp;&middot;&nbsp; FACEMAXX &nbsp;&middot;&nbsp; SLEEPMAXX &nbsp;&middot;&nbsp; GYMMAXX &nbsp;&middot;&nbsp; FRAMEMAXX &nbsp;&middot;&nbsp; STYLEMAXX &nbsp;&middot;&nbsp; MINDMAXX &nbsp;&middot;&nbsp; CLEANMAXX &nbsp;&middot;&nbsp; OPTIMIZE EVERYTHING &nbsp;&middot;&nbsp; MOG THE COMPETITION &nbsp;&middot;&nbsp; SERIOUS MEN USE SERIOUS TOOLS &nbsp;&middot;&nbsp;</span>
+</div>
+
+<!-- CALLOUT -->
+<div class="om-callout">
+  <p class="callout-text">If you are not optimizing every variable &mdash; face, sleep, frame, recovery, style, mind, environment &mdash; you are leaving mog points on the table.</p>
+  <p class="callout-sub">Seven protocols. One system. Zero excuses.</p>
+</div>
+
+<!-- PROTOCOL TABS -->
+<div class="om-proto-tabs" id="protocols">
+  <button class="proto-tab active" data-p="facemaxx" onclick="omShowPanel('facemaxx',this)">Facemaxx</button>
+  <button class="proto-tab" data-p="sleepmaxx" onclick="omShowPanel('sleepmaxx',this)">Sleepmaxx</button>
+  <button class="proto-tab" data-p="gymmaxx" onclick="omShowPanel('gymmaxx',this)">Gymmaxx</button>
+  <button class="proto-tab" data-p="framemaxx" onclick="omShowPanel('framemaxx',this)">Framemaxx</button>
+  <button class="proto-tab" data-p="stylemaxx" onclick="omShowPanel('stylemaxx',this)">Stylemaxx</button>
+  <button class="proto-tab" data-p="mindmaxx" onclick="omShowPanel('mindmaxx',this)">Mindmaxx</button>
+  <button class="proto-tab clean" data-p="cleanmaxx" onclick="omShowPanel('cleanmaxx',this)">Cleanmaxx</button>
+</div>
+
+<!-- PRODUCTS -->
+<section class="om-products">
+
+  <!-- FACEMAXX -->
+  <div class="proto-panel active" id="facemaxx">
+    <span class="section-tag">// Protocol 01</span>
+    <h2 class="section-heading">FACEMAXX</h2>
+    <p class="section-body">Your face is a variable. These are the clinical-grade tools to adjust it. LED therapy, microcurrent, cryotherapy — delivered to your door.</p>
+    <a href="#" class="view-all-link">View Full Facemaxx Collection &rarr;</a>
+    <div class="product-grid">
+      <div class="product-card hero-card">
+        <span class="card-badge">&#9733; Hero Product</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">LED Face Mask Pro — 630nm + 830nm</h3>
+        <p class="card-desc">Clinical-grade LED therapy at the two wavelengths with the most backing for collagen stimulation and skin repair.</p>
+        <p class="card-price">$85.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Rose Quartz Gua Sha Stone</h3>
+        <p class="card-desc">Stimulates lymphatic drainage, reduces puffiness, and defines facial contours with 5 minutes of daily use.</p>
+        <p class="card-price">$22.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Cryo Ice Roller</h3>
+        <p class="card-desc">Cold therapy for facial depuffing. Reduces inflammation and tightens pores. Use immediately after waking.</p>
+        <p class="card-price">$18.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Microcurrent Facial Wand</h3>
+        <p class="card-desc">Electrical stimulation that lifts and tones facial muscles. The non-surgical alternative men are actually using.</p>
+        <p class="card-price">$68.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLEEPMAXX -->
+  <div class="proto-panel" id="sleepmaxx">
+    <span class="section-tag">// Protocol 02</span>
+    <h2 class="section-heading">SLEEPMAXX</h2>
+    <p class="section-body">Sleep is when testosterone is produced. When your face decompresses. When your brain consolidates. Unoptimized sleep destroys everything downstream.</p>
+    <a href="#" class="view-all-link">View Full Sleepmaxx Collection &rarr;</a>
+    <div class="product-grid">
+      <div class="product-card hero-card">
+        <span class="card-badge">&#9733; Hero Product</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Mouth Tape — 60 Night Supply</h3>
+        <p class="card-desc">Nasal breathing during sleep increases nitric oxide, improves oxygen uptake, and eliminates snoring.</p>
+        <p class="card-price">$16.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Silk Sleep Mask</h3>
+        <p class="card-desc">Complete light blocking without pressure on the face. Silk reduces skin friction and retains moisture overnight.</p>
+        <p class="card-price">$24.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Blue Light Blocking Glasses</h3>
+        <p class="card-desc">Blocks 90% of blue light in the 400-500nm range. Start wearing 2 hours before sleep. Melatonin onset improves measurably.</p>
+        <p class="card-price">$32.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Magnesium Glycinate — 60 Caps</h3>
+        <p class="card-desc">The most bioavailable magnesium form. Supports GABA production, reduces cortisol, and deepens sleep architecture.</p>
+        <p class="card-price">$28.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- GYMMAXX -->
+  <div class="proto-panel" id="gymmaxx">
+    <span class="section-tag">// Protocol 03</span>
+    <h2 class="section-heading">GYMMAXX</h2>
+    <p class="section-body">Training is only half the protocol. Recovery, mobility, and output optimization are where serious gains are made.</p>
+    <a href="#" class="view-all-link">View Full Gymmaxx Collection &rarr;</a>
+    <div class="product-grid">
+      <div class="product-card hero-card">
+        <span class="card-badge">&#9733; Hero Product</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Compact Massage Gun</h3>
+        <p class="card-desc">Percussive therapy that accelerates muscle recovery, reduces DOMS, and improves range of motion pre-training.</p>
+        <p class="card-price">$72.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Creatine Monohydrate — 500g</h3>
+        <p class="card-desc">The most studied sports supplement in existence. 5g daily. Zero cycling required. Muscle, cognitive performance, hydration.</p>
+        <p class="card-price">$26.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Resistance Bands Set (5 levels)</h3>
+        <p class="card-desc">Progressive resistance for warm-up, activation, and accessory work. Portable protocol tool that goes everywhere.</p>
+        <p class="card-price">$24.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Lacrosse Massage Ball Set</h3>
+        <p class="card-desc">Targeted myofascial release for glutes, thoracic spine, and feet. What the massage gun can't reach, the ball does.</p>
+        <p class="card-price">$16.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FRAMEMAXX -->
+  <div class="proto-panel" id="framemaxx">
+    <span class="section-tag">// Protocol 04</span>
+    <h2 class="section-heading">FRAMEMAXX</h2>
+    <p class="section-body">Your frame is the first thing people see before you say a word. Posture, shoulder width, spine alignment — these tools fix what sitting destroys.</p>
+    <a href="#" class="view-all-link">View Full Framemaxx Collection &rarr;</a>
+    <div class="product-grid">
+      <div class="product-card hero-card">
+        <span class="card-badge">&#9733; Hero Product</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Smart Posture Corrector Brace</h3>
+        <p class="card-desc">Vibrates when you slouch. Retrains muscle memory passively. Most men see measurable posture change within 3 weeks.</p>
+        <p class="card-price">$38.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Grip Strengthener — Progressive</h3>
+        <p class="card-desc">Grip strength correlates with testosterone levels, longevity markers, and perceived dominance. Train it daily.</p>
+        <p class="card-price">$22.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Jawline Trainer</h3>
+        <p class="card-desc">Progressive resistance for masseter development. Consistent use over 90 days produces visible jawline definition.</p>
+        <p class="card-price">$18.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Orthopedic Insoles</h3>
+        <p class="card-desc">Corrects overpronation and leg length discrepancy. Foundation-level fix that improves posture from the ground up.</p>
+        <p class="card-price">$34.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- STYLEMAXX -->
+  <div class="proto-panel" id="stylemaxx">
+    <span class="section-tag">// Protocol 05</span>
+    <h2 class="section-heading">STYLEMAXX</h2>
+    <p class="section-body">Your physical optimization is undermined by a wrinkled shirt. Clean shoes, groomed beard, pressed clothes — the finishing variables most men ignore.</p>
+    <a href="#" class="view-all-link">View Full Stylemaxx Collection &rarr;</a>
+    <div class="product-grid">
+      <div class="product-card hero-card">
+        <span class="card-badge">&#9733; Hero Product</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Compact Clothes Steamer</h3>
+        <p class="card-desc">Wrinkles are the most visible sign of low standards. This removes them in 90 seconds. Use it every morning.</p>
+        <p class="card-price">$56.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Beard Grooming Kit</h3>
+        <p class="card-desc">Comb, beard oil, and balm. An ungroomed beard on an optimized face is a contradiction. Fix it in 3 minutes.</p>
+        <p class="card-price">$34.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Shoe Cleaning Kit (5-piece)</h3>
+        <p class="card-desc">Clean shoes are noticed before anything else on a man. This kit handles leather, suede, and sneakers.</p>
+        <p class="card-price">$28.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Fabric Shaver / Lint Remover</h3>
+        <p class="card-desc">Pilling on clothes is the fastest way to look cheap regardless of brand. Remove it. Takes 2 minutes per garment.</p>
+        <p class="card-price">$22.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MINDMAXX -->
+  <div class="proto-panel" id="mindmaxx">
+    <span class="section-tag">// Protocol 06</span>
+    <h2 class="section-heading">MINDMAXX</h2>
+    <p class="section-body">The body is one variable. Your focus, output, and cognitive environment are equally optimizable. Tools for the desk and the mind.</p>
+    <a href="#" class="view-all-link">View Full Mindmaxx Collection &rarr;</a>
+    <div class="product-grid">
+      <div class="product-card hero-card">
+        <span class="card-badge">&#9733; Hero Product</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Mushroom Coffee — Lion's Mane + Chaga</h3>
+        <p class="card-desc">Lion's Mane drives NGF production. Chaga reduces inflammatory load. Together they replace the cortisol spike of regular coffee.</p>
+        <p class="card-price">$42.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Nootropic Stack — L-Theanine + Alpha GPC</h3>
+        <p class="card-desc">L-Theanine smooths the stimulant curve. Alpha GPC provides the acetylcholine substrate for focused cognition.</p>
+        <p class="card-price">$38.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Blue Light Glasses — Clear Lens</h3>
+        <p class="card-desc">Day-use clear lens version for screen work. Reduces eye strain, headaches, and the cortisol response to screen exposure.</p>
+        <p class="card-price">$32.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Mechanical Focus Timer</h3>
+        <p class="card-desc">No app. No screen. Analog countdown that forces session commitment and trains the habit of focused intervals.</p>
+        <p class="card-price">$28.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLEANMAXX -->
+  <div class="proto-panel" id="cleanmaxx">
+    <span class="section-tag" style="color:#00CFFF">// Protocol 07</span>
+    <h2 class="section-heading">CLEANMAXX</h2>
+    <p class="section-body">Most men optimize what they add to their lives. Cleanmaxx addresses what you eliminate. Toxins, endocrine disruptors, and chemical exposure are silent variables quietly working against every other protocol you run.</p>
+    <a href="#" class="view-all-link" style="color:#00CFFF;border-color:#00CFFF">View Full Cleanmaxx Collection &rarr;</a>
+    <div class="product-grid">
+      <div class="product-card hero-card" style="background:#00CFFF">
+        <span class="card-badge" style="background:var(--black);color:#00CFFF">&#9733; Hero Product</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name" style="color:var(--black)">Glass Food Storage Container Set (10-piece)</h3>
+        <p class="card-desc" style="color:rgba(0,0,0,0.5)">Replaces BPA and phthalate-leaching plastic containers. Borosilicate glass with airtight lids. Microwave and dishwasher safe.</p>
+        <p class="card-price" style="color:var(--black)">$58.00</p>
+        <a href="#" class="card-link" style="color:var(--black);border-color:var(--black)">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge" style="color:#00CFFF">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Stainless Steel Water Bottle — 32oz</h3>
+        <p class="card-desc">Replaces microplastic-leaching plastic bottles. Insulated. Zero chemical off-gassing. Daily use for daily exposure reduction.</p>
+        <p class="card-price" style="color:#00CFFF">$38.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge" style="color:#00CFFF">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Water Filter Pitcher</h3>
+        <p class="card-desc">Removes chlorine, chloramine, lead, and heavy metals from tap water. What you drink daily affects hormone function.</p>
+        <p class="card-price" style="color:#00CFFF">$62.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+      <div class="product-card">
+        <span class="card-badge" style="color:#00CFFF">Protocol Tool</span>
+        <div class="card-img-placeholder"><span>Product Image</span></div>
+        <h3 class="card-name">Natural Aluminum-Free Deodorant (2-pack)</h3>
+        <p class="card-desc">Removes aluminum from daily skin absorption near lymph nodes. Effective odor control without the endocrine disruption.</p>
+        <p class="card-price" style="color:#00CFFF">$28.00</p>
+        <a href="#" class="card-link">View Product</a>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="om-how">
+  <span class="section-tag">// The System</span>
+  <h2 class="section-heading">HOW YOU<br>OPTIMIZE.</h2>
+  <div class="steps-grid">
+    <div>
+      <div class="step-num">01</div>
+      <h3 class="step-title">Pick Your Protocol</h3>
+      <p class="step-desc">Start with the protocol that addresses your biggest variable. Most start with Facemaxx, then stack Sleepmaxx within 30 days.</p>
+    </div>
+    <div>
+      <div class="step-num">02</div>
+      <h3 class="step-title">Stack the Tools</h3>
+      <p class="step-desc">Each protocol has entry, mid, and premium tools. Start with one hero product. Stack others as results compound.</p>
+    </div>
+    <div>
+      <div class="step-num">03</div>
+      <h3 class="step-title">Run the System</h3>
+      <p class="step-desc">20 minutes a day on any protocol produces measurable results within 30 days. Consistency mogs everything.</p>
+    </div>
+    <div>
+      <div class="step-num">04</div>
+      <h3 class="step-title">Expand</h3>
+      <p class="step-desc">Once one protocol is locked in, expand. The men at the top are running all seven simultaneously.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF -->
+<section class="om-proof" id="proof">
+  <span class="section-tag">// Results</span>
+  <h2 class="section-heading">THEY TOOK IT<br>SERIOUSLY.</h2>
+  <div class="proof-grid">
+    <div class="proof-card">
+      <div class="proof-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <p class="proof-quote">"3 weeks on the LED mask and my skin texture is a different tier. My barber asked what I changed."</p>
+      <p class="proof-who">&mdash; Marcus T., 24 &middot; Facemaxx</p>
+    </div>
+    <div class="proof-card">
+      <div class="proof-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <p class="proof-quote">"Started with mouth tape and blue light glasses. Sleep quality went from a 4 to an 8. Everything downstream improved."</p>
+      <p class="proof-who">&mdash; Jordan K., 22 &middot; Sleepmaxx</p>
+    </div>
+    <div class="proof-card">
+      <div class="proof-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <p class="proof-quote">"Smart posture corrector changed how I carry myself. People started treating me differently within a week."</p>
+      <p class="proof-who">&mdash; Ryan M., 27 &middot; Framemaxx</p>
+    </div>
+    <div class="proof-card">
+      <div class="proof-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <p class="proof-quote">"Swapped out all my plastic containers and got a water filter. Feels like a system upgrade for my whole life."</p>
+      <p class="proof-who">&mdash; Theo R., 26 &middot; Cleanmaxx</p>
+    </div>
+  </div>
+</section>
+
+<!-- CALLOUT 2 -->
+<div class="om-callout" style="flex-direction:column;gap:24px;text-align:center;justify-content:center;">
+  <p class="callout-text" style="text-align:center;margin:0 auto;">Stop leaving variables unoptimized.</p>
+  <a href="#protocols" class="btn-primary" style="align-self:center;padding:18px 56px;">View All Protocols</a>
+</div>
+
+<!-- FOOTER -->
+<!-- PAGES NAV STRIP -->
+<div style="background:#0a0a0a;border-top:1px solid #1e1e1e;border-bottom:1px solid #1e1e1e;padding:32px 48px;display:flex;gap:2px;flex-wrap:wrap;">
+  <a href="optimaxxing-bundles.html" style="flex:1;min-width:200px;background:#141414;padding:28px 24px;display:flex;flex-direction:column;gap:8px;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#1e1e1e'" onmouseout="this.style.background='#141414'">
+    <span style="font-family:Space Mono,monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#C8FF00">// Protocol Stacks</span>
+    <span style="font-family:Bebas Neue,sans-serif;font-size:32px;color:#F5F5F5;line-height:1">BUNDLES</span>
+    <span style="font-size:12px;color:#888">Save 25–33% stacking tools. 9 bundles across all 7 protocols.</span>
+  </a>
+  <a href="optimaxxing-quiz.html" style="flex:1;min-width:200px;background:#C8FF00;padding:28px 24px;display:flex;flex-direction:column;gap:8px;text-decoration:none;">
+    <span style="font-family:Space Mono,monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(0,0,0,0.4)">// 5 Questions</span>
+    <span style="font-family:Bebas Neue,sans-serif;font-size:32px;color:#050505;line-height:1">TAKE THE QUIZ</span>
+    <span style="font-size:12px;color:rgba(0,0,0,0.5)">Find your highest-priority protocol. Under 2 minutes.</span>
+  </a>
+  <a href="optimaxxing-about.html" style="flex:1;min-width:200px;background:#141414;padding:28px 24px;display:flex;flex-direction:column;gap:8px;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#1e1e1e'" onmouseout="this.style.background='#141414'">
+    <span style="font-family:Space Mono,monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#C8FF00">// The Mission</span>
+    <span style="font-family:Bebas Neue,sans-serif;font-size:32px;color:#F5F5F5;line-height:1">OUR MISSION</span>
+    <span style="font-size:12px;color:#888">Why we built this. The philosophy behind all 7 protocols.</span>
+  </a>
+</div>
+
+<footer class="om-footer">
+  <a href="#" class="footer-brand">OPTIMAXXING</a>
+  <div class="footer-links">
+    <a href="#">Returns</a>
+    <a href="#">Shipping</a>
+    <a href="#">FAQ</a>
+    <a href="#">Contact</a>
+  </div>
+  <p class="footer-copy">30-Day Protocol Guarantee &nbsp;&middot;&nbsp; &copy; 2026 Optimaxxing</p>
+</footer>
+
+<script>
+  function omToggleDrop(){
+    document.getElementById('omProtoBtn').classList.toggle('open');
+    document.getElementById('omDrop').classList.toggle('open');
+  }
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('.om-nav-center')){
+      document.getElementById('omProtoBtn').classList.remove('open');
+      document.getElementById('omDrop').classList.remove('open');
+    }
+  });
+  function omToggleMobile(){
+    document.getElementById('omBurger').classList.toggle('open');
+    document.getElementById('omMobileMenu').classList.toggle('open');
+  }
+  function omOpenCart(){
+    document.getElementById('omDrawer').classList.add('open');
+    document.getElementById('omOverlay').classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+  function omCloseCart(){
+    document.getElementById('omDrawer').classList.remove('open');
+    document.getElementById('omOverlay').classList.remove('open');
+    document.body.style.overflow='';
+  }
+  function omShowPanel(id,tab){
+    document.querySelectorAll('.proto-panel').forEach(function(p){p.classList.remove('active');});
+    document.querySelectorAll('.proto-tab').forEach(function(t){t.classList.remove('active');});
+    document.getElementById(id).classList.add('active');
+    if(tab) tab.classList.add('active');
+    document.getElementById('omDrop').classList.remove('open');
+    document.getElementById('omProtoBtn').classList.remove('open');
+  }
+</script>
+</body>
+</html>
