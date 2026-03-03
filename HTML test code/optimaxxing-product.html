@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPTIMAXXING — LED Face Mask</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black:  #050505;
+    --neon:   #C8FF00;
+    --white:  #F5F5F5;
+    --gray:   #141414;
+    --mid:    #202020;
+    --dim:    #888;
+    --border: #1e1e1e;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+  h1, h2, h3 { color: var(--white); }
+  a { color: inherit; text-decoration: none; }
+
+  /* BREADCRUMB */
+  .om-breadcrumb {
+    padding: 80px 48px 0;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .breadcrumb-link {
+    font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--dim); transition: color 0.2s;
+  }
+  .breadcrumb-link:hover { color: var(--neon); }
+  .breadcrumb-sep { font-size: 10px; color: var(--dim); }
+  .breadcrumb-current {
+    font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--white);
+  }
+
+  /* PRODUCT LAYOUT */
+  .product-wrap {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 2px; padding: 32px 48px 0;
+  }
+
+  /* Images */
+  .product-images { position: sticky; top: 80px; align-self: start; }
+  .main-img-wrap {
+    position: relative; overflow: hidden; aspect-ratio: 1;
+    background: var(--gray); margin-bottom: 2px;
+  }
+  .main-img-wrap img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform 0.4s ease; cursor: zoom-in;
+  }
+  .main-img-wrap:hover img { transform: scale(1.04); }
+  .main-img-placeholder {
+    width: 100%; aspect-ratio: 1; background: var(--mid);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .main-img-placeholder span {
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    color: var(--dim); letter-spacing: 2px; text-transform: uppercase;
+  }
+  .img-thumbnails { display: flex; gap: 2px; flex-wrap: wrap; }
+  .img-thumb {
+    width: 80px; height: 80px; object-fit: cover; cursor: pointer;
+    border: 1px solid transparent; transition: border-color 0.15s; opacity: 0.6;
+    background: var(--mid);
+  }
+  .img-thumb.active, .img-thumb:hover { border-color: var(--neon); opacity: 1; }
+
+  /* Info panel */
+  .product-info { padding: 0 0 0 48px; }
+  .product-proto-tag {
+    display: inline-block; margin-bottom: 20px;
+    font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px;
+    text-transform: uppercase; padding: 5px 12px;
+    background: var(--neon); color: var(--black);
+  }
+  .product-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 5vw, 72px); line-height: 0.95;
+    color: var(--white); margin-bottom: 24px;
+  }
+  .product-price-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
+  .product-price {
+    font-family: 'Space Mono', monospace; font-size: 28px; font-weight: 700;
+    color: var(--neon);
+  }
+  .product-compare {
+    font-family: 'Space Mono', monospace; font-size: 16px;
+    color: var(--dim); text-decoration: line-through;
+  }
+  .product-save {
+    font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--neon);
+    background: rgba(200,255,0,0.12); padding: 3px 8px;
+  }
+  .product-trust { display: flex; gap: 20px; margin: 20px 0 28px; flex-wrap: wrap; }
+  .trust-item { display: flex; align-items: center; gap: 6px; }
+  .trust-icon { color: var(--neon); font-size: 12px; }
+  .trust-text {
+    font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--dim);
+  }
+
+  /* Variants */
+  .variant-section { margin-bottom: 24px; }
+  .variant-label {
+    font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--dim); margin-bottom: 10px; display: block;
+  }
+  .variant-label span { color: var(--white); }
+  .variant-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .variant-btn {
+    font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px;
+    text-transform: uppercase; padding: 9px 16px;
+    background: var(--gray); color: var(--dim);
+    border: 1px solid var(--border); cursor: pointer; transition: all 0.15s;
+  }
+  .variant-btn:hover { border-color: var(--neon); color: var(--white); }
+  .variant-btn.active { background: var(--neon); color: var(--black); border-color: var(--neon); }
+
+  /* ATC */
+  .atc-section { margin-bottom: 24px; }
+  .qty-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .qty-label {
+    font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--dim);
+  }
+  .qty-ctrl { display: flex; align-items: center; border: 1px solid var(--border); }
+  .qty-ctrl button {
+    background: var(--gray); border: none; color: var(--white);
+    width: 36px; height: 36px; cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center; transition: background 0.15s;
+  }
+  .qty-ctrl button:hover { background: var(--mid); }
+  .qty-ctrl input {
+    background: var(--black); border: none;
+    border-left: 1px solid var(--border); border-right: 1px solid var(--border);
+    color: var(--white); font-family: 'Space Mono', monospace; font-size: 13px;
+    width: 44px; height: 36px; text-align: center; outline: none;
+  }
+  .atc-btn {
+    display: block; width: 100%; padding: 16px;
+    background: var(--neon); color: var(--black);
+    font-family: 'Space Mono', monospace; font-size: 12px;
+    font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+    border: none; cursor: pointer; transition: opacity 0.2s;
+  }
+  .atc-btn:hover { opacity: 0.88; }
+  .atc-success {
+    display: none; padding: 14px; background: rgba(200,255,0,0.1);
+    border: 1px solid var(--neon);
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--neon);
+    text-align: center; margin-top: 12px;
+  }
+  .atc-success.show { display: block; }
+
+  /* Tabs */
+  .product-tabs { margin-top: 40px; border-top: 1px solid var(--border); }
+  .tab-btns {
+    display: flex; border-bottom: 1px solid var(--border);
+  }
+  .tab-btn {
+    background: none; border: none; border-bottom: 2px solid transparent;
+    padding: 16px 20px; font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--dim);
+    cursor: pointer; transition: all 0.2s;
+  }
+  .tab-btn:hover { color: var(--white); }
+  .tab-btn.active { color: var(--neon); border-bottom-color: var(--neon); }
+  .tab-panel { display: none; padding: 24px 0; }
+  .tab-panel.active { display: block; }
+  .tab-panel p, .tab-panel li { font-size: 14px; color: var(--dim); line-height: 1.8; }
+  .tab-panel ul { padding-left: 20px; }
+  .tab-panel li { margin-bottom: 8px; }
+
+  /* RELATED PRODUCTS */
+  .related-section {
+    padding: 72px 48px; border-top: 1px solid var(--border);
+  }
+  .related-heading {
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    letter-spacing: 4px; text-transform: uppercase; color: var(--neon);
+    margin-bottom: 8px; display: block;
+  }
+  .related-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 48px;
+    color: var(--white); margin-bottom: 32px;
+  }
+  .related-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2px;
+  }
+  .related-card {
+    background: var(--gray); padding: 24px; transition: background 0.2s;
+  }
+  .related-card:hover { background: var(--mid); }
+  .related-card-img {
+    width: 100%; aspect-ratio: 1; background: var(--mid);
+    margin-bottom: 16px; display: flex; align-items: center; justify-content: center;
+  }
+  .related-card-img span {
+    font-family: 'Space Mono', monospace; font-size: 9px;
+    color: var(--dim); letter-spacing: 2px; text-transform: uppercase;
+  }
+  .related-card-name {
+    font-family: 'Bebas Neue', sans-serif; font-size: 20px;
+    color: var(--white); line-height: 1.1; margin-bottom: 8px;
+  }
+  .related-card-price {
+    font-family: 'Space Mono', monospace; font-size: 14px;
+    color: var(--neon); margin-bottom: 12px;
+  }
+  .related-link {
+    display: block; width: 100%; padding: 10px;
+    font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px;
+    text-transform: uppercase; text-align: center;
+    color: var(--dim); border: 1px solid var(--border); transition: all 0.2s;
+  }
+  .related-link:hover { background: var(--neon); border-color: var(--neon); color: var(--black); }
+
+  /* FOOTER */
+  .om-footer {
+    padding: 40px 48px; border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 4px; color: var(--neon); }
+  .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+  .footer-links a { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim); transition: color 0.2s; }
+  .footer-links a:hover { color: var(--neon); }
+  .footer-copy { font-size: 11px; color: var(--dim); }
+
+  @media (max-width: 768px) {
+    .om-breadcrumb { padding: 80px 20px 0; }
+    .product-wrap { grid-template-columns: 1fr; padding: 24px 20px 0; gap: 0; }
+    .product-images { position: static; margin-bottom: 32px; }
+    .product-info { padding: 0; }
+    .related-section { padding: 48px 20px; }
+    .om-footer { flex-direction: column; padding: 28px 20px; text-align: center; }
+    .footer-links { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<script>window.OM_PAGE = 'product';</script>
+
+  2. Copy everything between == HEADER START == and == HEADER END == into each page.
+
+  USAGE IN LIQUID:
+  This becomes Sections/optimaxxing-header.liquid
+  Include via {% section 'optimaxxing-header' %} in layout or each page section.
+-->
+
+<!-- == HEADER START == -->
+<style>
+  /* NAV */
+  .om-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:0 48px;height:64px;background:rgba(5,5,5,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+  .om-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:var(--neon);text-decoration:none;flex-shrink:0;}
+  .om-logo .rest{color:var(--white);}
+  .om-nav-center{position:relative;display:flex;align-items:center;}
+  .om-proto-btn{background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);padding:0 16px;height:64px;display:flex;align-items:center;gap:8px;transition:color 0.2s;}
+  .om-proto-btn:hover,.om-proto-btn.open{color:var(--neon);}
+  .chevron{font-size:8px;transition:transform 0.2s;}
+  .om-proto-btn.open .chevron{transform:rotate(180deg);}
+  .om-drop{position:absolute;top:64px;left:50%;transform:translateX(-50%);background:#080808;border:1px solid var(--border);border-top:2px solid var(--neon);display:none;min-width:220px;z-index:1001;box-shadow:0 16px 48px rgba(0,0,0,0.6);}
+  .om-drop.open{display:block;}
+  .om-drop a{display:flex;align-items:center;gap:12px;padding:14px 20px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--border);transition:background 0.15s,color 0.15s;}
+  .om-drop a:last-child{border-bottom:none;}
+  .om-drop a:hover{background:var(--gray);color:var(--neon);}
+  .pnum{color:var(--neon);font-size:9px;opacity:0.6;}
+  .om-nav-right{display:flex;align-items:center;gap:14px;}
+  .om-nav-link{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color 0.2s;}
+  .om-nav-link:hover,.om-nav-link.active{color:var(--neon);}
+  .om-cart-btn{position:relative;background:none;border:none;cursor:pointer;color:var(--white);padding:8px;display:flex;align-items:center;transition:color 0.2s;}
+  .om-cart-btn:hover{color:var(--neon);}
+  .om-cart-btn svg{width:22px;height:22px;stroke:currentColor;}
+  .om-badge{position:absolute;top:1px;right:1px;background:var(--neon);color:var(--black);font-family:'Space Mono',monospace;font-size:8px;font-weight:700;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .om-badge.hidden{display:none;}
+  .om-nav-cta{background:var(--neon);color:var(--black);padding:10px 20px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;}
+  .om-hamburger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;padding:8px;}
+  .om-hamburger span{display:block;width:22px;height:1.5px;background:var(--white);transition:all 0.25s;}
+  .om-hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+  .om-hamburger.open span:nth-child(2){opacity:0;}
+  .om-hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+  .om-mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;background:#080808;border-bottom:1px solid var(--border);z-index:999;padding:8px 0;}
+  .om-mobile-menu.open{display:block;}
+  .om-mobile-menu a{display:flex;align-items:center;gap:12px;padding:14px 20px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--border);transition:color 0.15s;}
+  .om-mobile-menu a:last-child{border-bottom:none;}
+  .om-mobile-menu a:hover{color:var(--neon);}
+
+  /* CART DRAWER */
+  .om-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1999;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+  .om-overlay.open{opacity:1;pointer-events:all;}
+  .om-drawer{position:fixed;top:0;right:0;width:400px;max-width:100vw;height:100vh;background:#080808;border-left:1px solid var(--border);z-index:2000;display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);}
+  .om-drawer.open{transform:translateX(0);}
+  .om-drawer-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);}
+  .om-drawer-head h2{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);letter-spacing:2px;}
+  .om-drawer-head h2 span{color:var(--neon);}
+  .om-drawer-x{background:none;border:none;cursor:pointer;color:var(--dim);font-size:22px;padding:4px;}
+  .om-drawer-body{flex:1;overflow-y:auto;padding:16px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;}
+  .om-drawer-body p{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);}
+  .om-drawer-foot{padding:20px 24px;border-top:1px solid var(--border);}
+  .om-subtotal-row{display:flex;justify-content:space-between;margin-bottom:16px;}
+  .om-subtotal-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);}
+  .om-subtotal-price{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--neon);}
+  .om-checkout{display:block;width:100%;padding:15px;text-align:center;background:var(--neon);color:var(--black);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;}
+
+  /* HEADER MOBILE */
+  @media(max-width:768px){
+    .om-nav{padding:0 16px;}
+    .om-nav-center{display:none;}
+    .om-nav-cta{display:none;}
+    .om-nav-link{display:none;}
+    .om-hamburger{display:flex;}
+    .om-drawer{width:100vw;}
+  }
+</style>
+
+<!-- OVERLAY -->
+<div class="om-overlay" id="omOverlay" onclick="omCloseCart()"></div>
+
+<!-- CART DRAWER -->
+<div class="om-drawer" id="omDrawer">
+  <div class="om-drawer-head">
+    <h2>YOUR <span>PROTOCOL</span></h2>
+    <button class="om-drawer-x" onclick="omCloseCart()">&times;</button>
+  </div>
+  <div class="om-drawer-body" id="omDrawerBody">
+    <p>Your protocol is empty.</p>
+    <a href="optimaxxing-landing-test.html" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--neon);border-bottom:1px solid var(--neon);padding-bottom:2px;">Start building &rarr;</a>
+  </div>
+  <div class="om-drawer-foot">
+    <div class="om-subtotal-row">
+      <span class="om-subtotal-label">Subtotal</span>
+      <span class="om-subtotal-price" id="omTotal">$0.00</span>
+    </div>
+    <a href="#" class="om-checkout">Checkout &rarr;</a>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="om-nav">
+  <a href="optimaxxing-landing-test.html" class="om-logo">OPTIMA<span class="rest">XXING</span></a>
+  <div class="om-nav-center">
+    <button class="om-proto-btn" id="omProtoBtn" onclick="omToggleDrop()">
+      Protocols <span class="chevron">&#9660;</span>
+    </button>
+    <div class="om-drop" id="omDrop">
+      <a href="optimaxxing-landing-test.html#protocols" data-proto="facemaxx"><span class="pnum">01</span>Facemaxx</a>
+      <a href="optimaxxing-landing-test.html#protocols" data-proto="sleepmaxx"><span class="pnum">02</span>Sleepmaxx</a>
+      <a href="optimaxxing-landing-test.html#protocols" data-proto="gymmaxx"><span class="pnum">03</span>Gymmaxx</a>
+      <a href="optimaxxing-landing-test.html#protocols" data-proto="framemaxx"><span class="pnum">04</span>Framemaxx</a>
+      <a href="optimaxxing-landing-test.html#protocols" data-proto="stylemaxx"><span class="pnum">05</span>Stylemaxx</a>
+      <a href="optimaxxing-landing-test.html#protocols" data-proto="mindmaxx"><span class="pnum">06</span>Mindmaxx</a>
+      <a href="optimaxxing-landing-test.html#protocols" data-proto="cleanmaxx" style="color:#00CFFF"><span class="pnum" style="color:#00CFFF">07</span>Cleanmaxx</a>
+      <a href="optimaxxing-bundles.html" style="border-top:1px solid #1e1e1e;margin-top:4px;padding-top:18px"><span class="pnum">→</span>Bundles</a>
+      <a href="optimaxxing-quiz.html"><span class="pnum">→</span>Take The Quiz</a>
+      <a href="optimaxxing-about.html"><span class="pnum">→</span>Mission</a>
+    </div>
+  </div>
+  <div class="om-nav-right">
+    <a href="optimaxxing-bundles.html" class="om-nav-link" data-nav="bundles">Bundles</a>
+    <a href="optimaxxing-about.html" class="om-nav-link" data-nav="about">Mission</a>
+    <button class="om-cart-btn" onclick="omOpenCart()" aria-label="Open cart">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 01-8 0"/>
+      </svg>
+      <span class="om-badge hidden" id="omBadge">0</span>
+    </button>
+    <a href="optimaxxing-quiz.html" class="om-nav-cta">Start The Protocol</a>
+    <button class="om-hamburger" id="omBurger" onclick="omToggleMobile()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="om-mobile-menu" id="omMobileMenu">
+  <a href="optimaxxing-landing-test.html#protocols" data-proto="facemaxx" onclick="omToggleMobile()"><span class="pnum">01</span>Facemaxx</a>
+  <a href="optimaxxing-landing-test.html#protocols" data-proto="sleepmaxx" onclick="omToggleMobile()"><span class="pnum">02</span>Sleepmaxx</a>
+  <a href="optimaxxing-landing-test.html#protocols" data-proto="gymmaxx" onclick="omToggleMobile()"><span class="pnum">03</span>Gymmaxx</a>
+  <a href="optimaxxing-landing-test.html#protocols" data-proto="framemaxx" onclick="omToggleMobile()"><span class="pnum">04</span>Framemaxx</a>
+  <a href="optimaxxing-landing-test.html#protocols" data-proto="stylemaxx" onclick="omToggleMobile()"><span class="pnum">05</span>Stylemaxx</a>
+  <a href="optimaxxing-landing-test.html#protocols" data-proto="mindmaxx" onclick="omToggleMobile()"><span class="pnum">06</span>Mindmaxx</a>
+  <a href="optimaxxing-landing-test.html#protocols" data-proto="cleanmaxx" onclick="omToggleMobile()" style="color:#00CFFF"><span class="pnum" style="color:#00CFFF">07</span>Cleanmaxx</a>
+  <a href="optimaxxing-bundles.html" onclick="omToggleMobile()"><span class="pnum">→</span>Bundles</a>
+  <a href="optimaxxing-quiz.html" onclick="omToggleMobile()"><span class="pnum">→</span>Take The Quiz</a>
+  <a href="optimaxxing-about.html" onclick="omToggleMobile()"><span class="pnum">→</span>Mission</a>
+</div>
+
+<!-- HEADER JS -->
+<script>
+  function omToggleDrop(){
+    document.getElementById('omProtoBtn').classList.toggle('open');
+    document.getElementById('omDrop').classList.toggle('open');
+  }
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('.om-nav-center')){
+      document.getElementById('omProtoBtn').classList.remove('open');
+      document.getElementById('omDrop').classList.remove('open');
+    }
+  });
+  function omToggleMobile(){
+    document.getElementById('omBurger').classList.toggle('open');
+    document.getElementById('omMobileMenu').classList.toggle('open');
+  }
+  function omOpenCart(){
+    document.getElementById('omDrawer').classList.add('open');
+    document.getElementById('omOverlay').classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+  function omCloseCart(){
+    document.getElementById('omDrawer').classList.remove('open');
+    document.getElementById('omOverlay').classList.remove('open');
+    document.body.style.overflow='';
+  }
+  // Highlight active nav link
+  (function(){
+    var page = window.OM_PAGE || '';
+    document.querySelectorAll('.om-nav-link[data-nav]').forEach(function(el){
+      if(el.dataset.nav === page) el.classList.add('active');
+    });
+  })();
+</script>
+<!-- == HEADER END == -->
+
+<!-- BREADCRUMB -->
+<div class="om-breadcrumb">
+  <a href="optimaxxing-landing-test.html" class="breadcrumb-link">Home</a>
+  <span class="breadcrumb-sep">/</span>
+  <a href="optimaxxing-collection.html" class="breadcrumb-link">Facemaxx Protocol</a>
+  <span class="breadcrumb-sep">/</span>
+  <span class="breadcrumb-current">LED Face Mask</span>
+</div>
+
+<!-- PRODUCT -->
+<div class="product-wrap">
+
+  <!-- Images -->
+  <div class="product-images">
+    <div class="main-img-wrap">
+      <div class="main-img-placeholder" id="mainImg"><span>Product Image</span></div>
+    </div>
+    <div class="img-thumbnails">
+      <div class="img-thumb active" onclick="omSwapImg(this, 1)"><span style="font-size:8px;color:var(--dim);display:flex;align-items:center;justify-content:center;height:100%">1</span></div>
+      <div class="img-thumb" onclick="omSwapImg(this, 2)"><span style="font-size:8px;color:var(--dim);display:flex;align-items:center;justify-content:center;height:100%">2</span></div>
+      <div class="img-thumb" onclick="omSwapImg(this, 3)"><span style="font-size:8px;color:var(--dim);display:flex;align-items:center;justify-content:center;height:100%">3</span></div>
+      <div class="img-thumb" onclick="omSwapImg(this, 4)"><span style="font-size:8px;color:var(--dim);display:flex;align-items:center;justify-content:center;height:100%">4</span></div>
+    </div>
+  </div>
+
+  <!-- Info -->
+  <div class="product-info">
+    <span class="product-proto-tag">Facemaxx Protocol</span>
+    <h1 class="product-name">LED FACE MASK</h1>
+
+    <div class="product-price-row">
+      <span class="product-price" id="prodPrice">$85.00</span>
+      <span class="product-compare">$120.00</span>
+      <span class="product-save">29% off</span>
+    </div>
+
+    <div class="product-trust">
+      <div class="trust-item"><span class="trust-icon">&#9733;</span><span class="trust-text">30-Day Guarantee</span></div>
+      <div class="trust-item"><span class="trust-icon">&#9650;</span><span class="trust-text">Free Shipping</span></div>
+      <div class="trust-item"><span class="trust-icon">&#9632;</span><span class="trust-text">CE Certified</span></div>
+    </div>
+
+    <!-- Variants -->
+    <div class="variant-section">
+      <span class="variant-label">Mode: <span id="optVal1">Red + NIR</span></span>
+      <div class="variant-btns">
+        <button class="variant-btn active" onclick="omSelectVariant('Red + NIR', this)">Red + NIR</button>
+        <button class="variant-btn" onclick="omSelectVariant('Red Only', this)">Red Only</button>
+        <button class="variant-btn" onclick="omSelectVariant('Blue + Red', this)">Blue + Red</button>
+      </div>
+    </div>
+
+    <!-- Qty + ATC -->
+    <div class="atc-section">
+      <div class="qty-row">
+        <span class="qty-label">Qty</span>
+        <div class="qty-ctrl">
+          <button type="button" onclick="omQtyChange(-1)">&#8722;</button>
+          <input type="number" id="prodQty" value="1" min="1" max="99">
+          <button type="button" onclick="omQtyChange(1)">+</button>
+        </div>
+      </div>
+      <button class="atc-btn" id="atcBtn" onclick="omAddToCart()">
+        Add To Protocol &rarr;
+      </button>
+      <div class="atc-success" id="atcSuccess">&#10003; Added to your protocol</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="product-tabs">
+      <div class="tab-btns">
+        <button class="tab-btn active" onclick="omShowTab('desc', this)">Description</button>
+        <button class="tab-btn" onclick="omShowTab('protocol', this)">How To Use</button>
+        <button class="tab-btn" onclick="omShowTab('shipping', this)">Shipping</button>
+      </div>
+      <div class="tab-panel active" id="desc">
+        <p>Clinical-grade LED therapy mask combining 630nm red light and 830nm near-infrared wavelengths. Red light stimulates collagen production and increases blood circulation for skin rejuvenation. Near-infrared penetrates deeper tissue for cellular repair and inflammation reduction.</p>
+        <p style="margin-top:16px">Medical-grade LEDs with 150+ diodes provide full-face coverage. Built-in timer with 10, 15, and 20-minute sessions. USB-C rechargeable with 5+ sessions per charge. Lightweight silicone construction for comfortable daily use.</p>
+      </div>
+      <div class="tab-panel" id="protocol">
+        <ul>
+          <li>Use 3-5x per week for best results. Consistency mogs everything.</li>
+          <li>Start with 10-minute sessions. Build to 15–20 minutes over 2 weeks.</li>
+          <li>Clean face first. Apply serum before masking for enhanced absorption.</li>
+          <li>Use after facial steaming for maximum pore penetration.</li>
+          <li>Evening sessions preferred — red light does not disrupt sleep.</li>
+          <li>Visible results typically appear at week 2-3 with consistent use.</li>
+        </ul>
+      </div>
+      <div class="tab-panel" id="shipping">
+        <p>Free tracked shipping on all orders. Ships within 1-3 business days. Typical delivery 7-14 business days depending on location.</p>
+        <p style="margin-top:16px">30-day protocol guarantee. If the tool does not deliver results within 30 days of consistent use, return it for a full refund. No conditions. No questions.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RELATED PRODUCTS -->
+<section class="related-section">
+  <span class="related-heading">// Same Protocol</span>
+  <h2 class="related-title">COMPLETE YOUR FACEMAXX</h2>
+  <div class="related-grid">
+    <div class="related-card">
+      <div class="related-card-img"><span>Image</span></div>
+      <div class="related-card-name">ROSE QUARTZ GUA SHA</div>
+      <div class="related-card-price">$22.00</div>
+      <a href="#" class="related-link">View Product</a>
+    </div>
+    <div class="related-card">
+      <div class="related-card-img"><span>Image</span></div>
+      <div class="related-card-name">CRYO FACE ROLLER</div>
+      <div class="related-card-price">$26.00</div>
+      <a href="#" class="related-link">View Product</a>
+    </div>
+    <div class="related-card">
+      <div class="related-card-img"><span>Image</span></div>
+      <div class="related-card-name">FACIAL STEAMER</div>
+      <div class="related-card-price">$38.00</div>
+      <a href="#" class="related-link">View Product</a>
+    </div>
+    <div class="related-card">
+      <div class="related-card-img"><span>Image</span></div>
+      <div class="related-card-name">DERMA ROLLER 0.25mm</div>
+      <div class="related-card-price">$18.00</div>
+      <a href="#" class="related-link">View Product</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="om-footer">
+  <a href="optimaxxing-landing-test.html" class="footer-brand">OPTIMAXXING</a>
+  <div class="footer-links">
+    <a href="#">Returns</a>
+    <a href="#">Shipping</a>
+    <a href="#">FAQ</a>
+    <a href="#">Contact</a>
+  </div>
+  <p class="footer-copy">30-Day Protocol Guarantee &nbsp;&middot;&nbsp; &copy; 2026 Optimaxxing</p>
+</footer>
+
+<script>
+  // Thumbnail swap
+  function omSwapImg(thumb, idx) {
+    document.querySelectorAll('.img-thumb').forEach(function(t) { t.classList.remove('active'); });
+    thumb.classList.add('active');
+    // In real version this swaps the main image src
+  }
+
+  // Qty
+  function omQtyChange(delta) {
+    var input = document.getElementById('prodQty');
+    var val = parseInt(input.value) + delta;
+    input.value = Math.max(1, Math.min(99, val));
+  }
+
+  // Variant selection
+  function omSelectVariant(value, btn) {
+    document.getElementById('optVal1').textContent = value;
+    btn.parentElement.querySelectorAll('.variant-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+
+  // Add to cart (demo)
+  function omAddToCart() {
+    var btn = document.getElementById('atcBtn');
+    btn.disabled = true;
+    btn.textContent = 'Adding...';
+    setTimeout(function() {
+      btn.textContent = 'Add To Protocol \u2192';
+      btn.disabled = false;
+      var success = document.getElementById('atcSuccess');
+      success.classList.add('show');
+      setTimeout(function() { success.classList.remove('show'); }, 3000);
+      // Update cart badge
+      var badge = document.getElementById('omBadge');
+      if (badge) {
+        var count = parseInt(badge.textContent) + parseInt(document.getElementById('prodQty').value);
+        badge.textContent = count;
+        badge.classList.remove('hidden');
+      }
+      if (typeof omOpenCart === 'function') omOpenCart();
+    }, 600);
+  }
+
+  // Tabs
+  function omShowTab(id, btn) {
+    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>

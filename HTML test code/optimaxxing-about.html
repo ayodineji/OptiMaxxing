@@ -17,19 +17,7 @@
   }
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; overflow-x: hidden; cursor: none; }
-
-  .cursor      { position: fixed; width: 8px; height: 8px; background: var(--neon); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); }
-  .cursor-ring { position: fixed; width: 32px; height: 32px; border: 1px solid rgba(200,255,0,0.35); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: all 0.15s ease; }
-
-  /* NAV */
-  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 0 48px; height: 64px; background: rgba(5,5,5,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
-  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; color: var(--neon); text-decoration: none; }
-  .nav-logo span { color: var(--white); }
-  .nav-links { display: flex; gap: 32px; align-items: center; }
-  .nav-link { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim); text-decoration: none; transition: color 0.2s; }
-  .nav-link:hover, .nav-link.active { color: var(--neon); }
-  .nav-cta { background: var(--neon); color: var(--black); padding: 10px 20px; font-family: 'Space Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
 
   /* HERO */
   .hero {
@@ -105,7 +93,6 @@
   .protocol-row {
     display: grid; grid-template-columns: 80px 1fr 1fr; align-items: center;
     padding: 28px 48px; border-bottom: 1px solid var(--border);
-    transition: background 0.2s;
     opacity: 0; transform: translateY(12px);
     transition: opacity 0.5s ease, transform 0.5s ease, background 0.2s;
   }
@@ -144,15 +131,16 @@
   .cta-secondary:hover { border-color: var(--dim); }
 
   /* FOOTER */
-  .footer { padding: 40px 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
+  .om-footer { padding: 40px 48px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
   .footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 4px; color: var(--neon); text-decoration: none; }
+  .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+  .footer-links a { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--neon); }
   .footer-copy { font-size: 11px; color: var(--dim); font-family: 'Space Mono', monospace; }
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
   @media (max-width: 768px) {
-    .nav { padding: 0 20px; }
-    .nav-links .nav-link { display: none; }
     .hero { padding: 100px 20px 60px; }
     .hero-scroll { left: 20px; }
     .manifesto { padding: 80px 20px; }
@@ -162,26 +150,194 @@
     .beliefs { padding: 80px 20px; }
     .beliefs-grid { grid-template-columns: 1fr; }
     .cta-band { grid-template-columns: 1fr; padding: 60px 20px; }
-    .footer { padding: 28px 20px; flex-direction: column; text-align: center; }
-    body { cursor: auto; }
-    .cursor, .cursor-ring { display: none; }
+    .om-footer { padding: 28px 20px; flex-direction: column; text-align: center; }
+    .footer-links { justify-content: center; }
   }
 </style>
 </head>
 <body>
+<script>window.OM_PAGE = 'about';</script>
 
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
+  2. Copy everything between == HEADER START == and == HEADER END == into each page.
 
-<nav class="nav">
-  <a href="#" class="nav-logo">OPTIMA<span>XXING</span></a>
-  <div class="nav-links">
-    <a href="#" class="nav-link">Protocols</a>
-    <a href="#" class="nav-link">Bundles</a>
-    <a href="#" class="nav-link active">Mission</a>
-    <a href="optimaxxing-quiz.html" class="nav-cta">Start The Protocol</a>
+  USAGE IN LIQUID:
+  This becomes Sections/optimaxxing-header.liquid
+  Include via {% section 'optimaxxing-header' %} in layout or each page section.
+-->
+
+<!-- == HEADER START == -->
+<style>
+  /* NAV */
+  .om-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:0 48px;height:64px;background:rgba(5,5,5,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
+  .om-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:var(--neon);text-decoration:none;flex-shrink:0;}
+  .om-logo .rest{color:var(--white);}
+  .om-nav-center{position:relative;display:flex;align-items:center;}
+  .om-proto-btn{background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);padding:0 16px;height:64px;display:flex;align-items:center;gap:8px;transition:color 0.2s;}
+  .om-proto-btn:hover,.om-proto-btn.open{color:var(--neon);}
+  .chevron{font-size:8px;transition:transform 0.2s;}
+  .om-proto-btn.open .chevron{transform:rotate(180deg);}
+  .om-drop{position:absolute;top:64px;left:50%;transform:translateX(-50%);background:#080808;border:1px solid var(--border);border-top:2px solid var(--neon);display:none;min-width:220px;z-index:1001;box-shadow:0 16px 48px rgba(0,0,0,0.6);}
+  .om-drop.open{display:block;}
+  .om-drop a{display:flex;align-items:center;gap:12px;padding:14px 20px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--border);transition:background 0.15s,color 0.15s;}
+  .om-drop a:last-child{border-bottom:none;}
+  .om-drop a:hover{background:var(--gray);color:var(--neon);}
+  .pnum{color:var(--neon);font-size:9px;opacity:0.6;}
+  .om-nav-right{display:flex;align-items:center;gap:14px;}
+  .om-nav-link{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color 0.2s;}
+  .om-nav-link:hover,.om-nav-link.active{color:var(--neon);}
+  .om-cart-btn{position:relative;background:none;border:none;cursor:pointer;color:var(--white);padding:8px;display:flex;align-items:center;transition:color 0.2s;}
+  .om-cart-btn:hover{color:var(--neon);}
+  .om-cart-btn svg{width:22px;height:22px;stroke:currentColor;}
+  .om-badge{position:absolute;top:1px;right:1px;background:var(--neon);color:var(--black);font-family:'Space Mono',monospace;font-size:8px;font-weight:700;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .om-badge.hidden{display:none;}
+  .om-nav-cta{background:var(--neon);color:var(--black);padding:10px 20px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;}
+  .om-hamburger{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;padding:8px;}
+  .om-hamburger span{display:block;width:22px;height:1.5px;background:var(--white);transition:all 0.25s;}
+  .om-hamburger.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+  .om-hamburger.open span:nth-child(2){opacity:0;}
+  .om-hamburger.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+  .om-mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;background:#080808;border-bottom:1px solid var(--border);z-index:999;padding:8px 0;}
+  .om-mobile-menu.open{display:block;}
+  .om-mobile-menu a{display:flex;align-items:center;gap:12px;padding:14px 20px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--border);transition:color 0.15s;}
+  .om-mobile-menu a:last-child{border-bottom:none;}
+  .om-mobile-menu a:hover{color:var(--neon);}
+
+  /* CART DRAWER */
+  .om-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1999;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+  .om-overlay.open{opacity:1;pointer-events:all;}
+  .om-drawer{position:fixed;top:0;right:0;width:400px;max-width:100vw;height:100vh;background:#080808;border-left:1px solid var(--border);z-index:2000;display:flex;flex-direction:column;transform:translateX(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);}
+  .om-drawer.open{transform:translateX(0);}
+  .om-drawer-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--border);}
+  .om-drawer-head h2{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);letter-spacing:2px;}
+  .om-drawer-head h2 span{color:var(--neon);}
+  .om-drawer-x{background:none;border:none;cursor:pointer;color:var(--dim);font-size:22px;padding:4px;}
+  .om-drawer-body{flex:1;overflow-y:auto;padding:16px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;}
+  .om-drawer-body p{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);}
+  .om-drawer-foot{padding:20px 24px;border-top:1px solid var(--border);}
+  .om-subtotal-row{display:flex;justify-content:space-between;margin-bottom:16px;}
+  .om-subtotal-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);}
+  .om-subtotal-price{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--neon);}
+  .om-checkout{display:block;width:100%;padding:15px;text-align:center;background:var(--neon);color:var(--black);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;}
+
+  /* HEADER MOBILE */
+  @media(max-width:768px){
+    .om-nav{padding:0 16px;}
+    .om-nav-center{display:none;}
+    .om-nav-cta{display:none;}
+    .om-nav-link{display:none;}
+    .om-hamburger{display:flex;}
+    .om-drawer{width:100vw;}
+  }
+</style>
+
+<!-- OVERLAY -->
+<div class="om-overlay" id="omOverlay" onclick="omCloseCart()"></div>
+
+<!-- CART DRAWER -->
+<div class="om-drawer" id="omDrawer">
+  <div class="om-drawer-head">
+    <h2>YOUR <span>PROTOCOL</span></h2>
+    <button class="om-drawer-x" onclick="omCloseCart()">&times;</button>
+  </div>
+  <div class="om-drawer-body" id="omDrawerBody">
+    <p>Your protocol is empty.</p>
+    <a href="optimaxxing-landing-test.html" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--neon);border-bottom:1px solid var(--neon);padding-bottom:2px;">Start building &rarr;</a>
+  </div>
+  <div class="om-drawer-foot">
+    <div class="om-subtotal-row">
+      <span class="om-subtotal-label">Subtotal</span>
+      <span class="om-subtotal-price" id="omTotal">$0.00</span>
+    </div>
+    <a href="#" class="om-checkout">Checkout &rarr;</a>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="om-nav">
+  <a href="optimaxxing-landing-test.html" class="om-logo">OPTIMA<span class="rest">XXING</span></a>
+  <div class="om-nav-center">
+    <button class="om-proto-btn" id="omProtoBtn" onclick="omToggleDrop()">
+      Protocols <span class="chevron">&#9660;</span>
+    </button>
+    <div class="om-drop" id="omDrop">
+      <a href="optimaxxing-landing-test.html#protocols" data-proto="facemaxx"><span class="pnum">01</span>Facemaxx</a>
+      <a href="optimaxxing-landing-test.html#protocols" data-proto="sleepmaxx"><span class="pnum">02</span>Sleepmaxx</a>
+      <a href="optimaxxing-landing-test.html#protocols" data-proto="gymmaxx"><span class="pnum">03</span>Gymmaxx</a>
+      <a href="optimaxxing-landing-test.html#protocols" data-proto="framemaxx"><span class="pnum">04</span>Framemaxx</a>
+      <a href="optimaxxing-landing-test.html#protocols" data-proto="stylemaxx"><span class="pnum">05</span>Stylemaxx</a>
+      <a href="optimaxxing-landing-test.html#protocols" data-proto="mindmaxx"><span class="pnum">06</span>Mindmaxx</a>
+      <a href="optimaxxing-landing-test.html#protocols" data-proto="cleanmaxx" style="color:#00CFFF"><span class="pnum" style="color:#00CFFF">07</span>Cleanmaxx</a>
+      <a href="optimaxxing-bundles.html" style="border-top:1px solid #1e1e1e;margin-top:4px;padding-top:18px"><span class="pnum">→</span>Bundles</a>
+      <a href="optimaxxing-quiz.html"><span class="pnum">→</span>Take The Quiz</a>
+      <a href="optimaxxing-about.html"><span class="pnum">→</span>Mission</a>
+    </div>
+  </div>
+  <div class="om-nav-right">
+    <a href="optimaxxing-bundles.html" class="om-nav-link" data-nav="bundles">Bundles</a>
+    <a href="optimaxxing-about.html" class="om-nav-link" data-nav="about">Mission</a>
+    <button class="om-cart-btn" onclick="omOpenCart()" aria-label="Open cart">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 01-8 0"/>
+      </svg>
+      <span class="om-badge hidden" id="omBadge">0</span>
+    </button>
+    <a href="optimaxxing-quiz.html" class="om-nav-cta">Start The Protocol</a>
+    <button class="om-hamburger" id="omBurger" onclick="omToggleMobile()">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- MOBILE MENU -->
+<div class="om-mobile-menu" id="omMobileMenu">
+  <a href="optimaxxing-landing-test.html#protocols" data-proto="facemaxx" onclick="omToggleMobile()"><span class="pnum">01</span>Facemaxx</a>
+  <a href="optimaxxing-landing-test.html#protocols" data-proto="sleepmaxx" onclick="omToggleMobile()"><span class="pnum">02</span>Sleepmaxx</a>
+  <a href="optimaxxing-landing-test.html#protocols" data-proto="gymmaxx" onclick="omToggleMobile()"><span class="pnum">03</span>Gymmaxx</a>
+  <a href="optimaxxing-landing-test.html#protocols" data-proto="framemaxx" onclick="omToggleMobile()"><span class="pnum">04</span>Framemaxx</a>
+  <a href="optimaxxing-landing-test.html#protocols" data-proto="stylemaxx" onclick="omToggleMobile()"><span class="pnum">05</span>Stylemaxx</a>
+  <a href="optimaxxing-landing-test.html#protocols" data-proto="mindmaxx" onclick="omToggleMobile()"><span class="pnum">06</span>Mindmaxx</a>
+  <a href="optimaxxing-landing-test.html#protocols" data-proto="cleanmaxx" onclick="omToggleMobile()" style="color:#00CFFF"><span class="pnum" style="color:#00CFFF">07</span>Cleanmaxx</a>
+  <a href="optimaxxing-bundles.html" onclick="omToggleMobile()"><span class="pnum">→</span>Bundles</a>
+  <a href="optimaxxing-quiz.html" onclick="omToggleMobile()"><span class="pnum">→</span>Take The Quiz</a>
+  <a href="optimaxxing-about.html" onclick="omToggleMobile()"><span class="pnum">→</span>Mission</a>
+</div>
+
+<!-- HEADER JS -->
+<script>
+  function omToggleDrop(){
+    document.getElementById('omProtoBtn').classList.toggle('open');
+    document.getElementById('omDrop').classList.toggle('open');
+  }
+  document.addEventListener('click',function(e){
+    if(!e.target.closest('.om-nav-center')){
+      document.getElementById('omProtoBtn').classList.remove('open');
+      document.getElementById('omDrop').classList.remove('open');
+    }
+  });
+  function omToggleMobile(){
+    document.getElementById('omBurger').classList.toggle('open');
+    document.getElementById('omMobileMenu').classList.toggle('open');
+  }
+  function omOpenCart(){
+    document.getElementById('omDrawer').classList.add('open');
+    document.getElementById('omOverlay').classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+  function omCloseCart(){
+    document.getElementById('omDrawer').classList.remove('open');
+    document.getElementById('omOverlay').classList.remove('open');
+    document.body.style.overflow='';
+  }
+  // Highlight active nav link
+  (function(){
+    var page = window.OM_PAGE || '';
+    document.querySelectorAll('.om-nav-link[data-nav]').forEach(function(el){
+      if(el.dataset.nav === page) el.classList.add('active');
+    });
+  })();
+</script>
+<!-- == HEADER END == -->
 
 <!-- HERO -->
 <section class="hero">
@@ -223,58 +379,37 @@
 
   <div class="protocol-row">
     <div class="proto-num">01</div>
-    <div class="proto-info">
-      <div class="proto-name">FACEMAXX</div>
-      <div class="proto-tag">Face Optimization Protocol</div>
-    </div>
+    <div class="proto-info"><div class="proto-name">FACEMAXX</div><div class="proto-tag">Face Optimization Protocol</div></div>
     <div class="proto-desc">LED therapy, gua sha, cryotherapy, microcurrent, and skincare tools for measurable facial improvement. The most clinically validated protocol in the system.</div>
   </div>
   <div class="protocol-row">
     <div class="proto-num">02</div>
-    <div class="proto-info">
-      <div class="proto-name">SLEEPMAXX</div>
-      <div class="proto-tag">Sleep Optimization Protocol</div>
-    </div>
+    <div class="proto-info"><div class="proto-name">SLEEPMAXX</div><div class="proto-tag">Sleep Optimization Protocol</div></div>
     <div class="proto-desc">Testosterone synthesis, skin regeneration, cortisol clearance, and cognitive consolidation all happen during sleep. This protocol controls the 8 hours where everything compounds.</div>
   </div>
   <div class="protocol-row">
     <div class="proto-num">03</div>
-    <div class="proto-info">
-      <div class="proto-name">GYMMAXX</div>
-      <div class="proto-tag">Training &amp; Recovery Protocol</div>
-    </div>
+    <div class="proto-info"><div class="proto-name">GYMMAXX</div><div class="proto-tag">Training &amp; Recovery Protocol</div></div>
     <div class="proto-desc">Training is the stimulus. Recovery is the result. Tools for the 23 hours that determine whether the hour in the gym actually produces adaptation.</div>
   </div>
   <div class="protocol-row">
     <div class="proto-num">04</div>
-    <div class="proto-info">
-      <div class="proto-name">FRAMEMAXX</div>
-      <div class="proto-tag">Frame &amp; Posture Protocol</div>
-    </div>
+    <div class="proto-info"><div class="proto-name">FRAMEMAXX</div><div class="proto-tag">Frame &amp; Posture Protocol</div></div>
     <div class="proto-desc">Posture, jawline, grip, and physical presence. The variables that communicate dominance or submission before a single word is said.</div>
   </div>
   <div class="protocol-row">
     <div class="proto-num">05</div>
-    <div class="proto-info">
-      <div class="proto-name">STYLEMAXX</div>
-      <div class="proto-tag">Style &amp; Grooming Protocol</div>
-    </div>
+    <div class="proto-info"><div class="proto-name">STYLEMAXX</div><div class="proto-tag">Style &amp; Grooming Protocol</div></div>
     <div class="proto-desc">The finishing protocol. Physical optimization means nothing if the presentation is sloppy. Tools that make the details — which are what separate men — consistent and automatic.</div>
   </div>
   <div class="protocol-row">
     <div class="proto-num">06</div>
-    <div class="proto-info">
-      <div class="proto-name">MINDMAXX</div>
-      <div class="proto-tag">Focus &amp; Cognition Protocol</div>
-    </div>
+    <div class="proto-info"><div class="proto-name">MINDMAXX</div><div class="proto-tag">Focus &amp; Cognition Protocol</div></div>
     <div class="proto-desc">Focus is not a personality trait — it is a physiological state. Nootropics, environmental tools, and cognitive inputs that make high output the default rather than the exception.</div>
   </div>
   <div class="protocol-row">
     <div class="proto-num" style="color:#00CFFF;opacity:0.3">07</div>
-    <div class="proto-info">
-      <div class="proto-name">CLEANMAXX</div>
-      <div class="proto-tag cleanmaxx-tag">Clean Living Protocol</div>
-    </div>
+    <div class="proto-info"><div class="proto-name">CLEANMAXX</div><div class="proto-tag cleanmaxx-tag">Clean Living Protocol</div></div>
     <div class="proto-desc">The protocol that removes interference. PFAS, BPA, microplastics, endocrine disruptors — silent variables that cap the results of every other protocol you run. Eliminate the ceiling.</div>
   </div>
 </section>
@@ -324,23 +459,22 @@
   </div>
   <div class="cta-buttons">
     <a href="optimaxxing-quiz.html" class="cta-primary">Take The Quiz &rarr;</a>
-    <a href="#" class="cta-secondary">Browse All Protocols</a>
+    <a href="optimaxxing-landing-test.html#protocols" class="cta-secondary">Browse All Protocols</a>
   </div>
 </section>
 
-<footer class="footer">
-  <a href="#" class="footer-brand">OPTIMAXXING</a>
-  <p class="footer-copy">Optimization + Maximization &nbsp;&middot;&nbsp; &copy; 2026</p>
+<footer class="om-footer">
+  <a href="optimaxxing-landing-test.html" class="footer-brand">OPTIMAXXING</a>
+  <div class="footer-links">
+    <a href="#">Returns</a>
+    <a href="#">Shipping</a>
+    <a href="#">FAQ</a>
+    <a href="#">Contact</a>
+  </div>
+  <p class="footer-copy">30-Day Protocol Guarantee &nbsp;&middot;&nbsp; &copy; 2026 Optimaxxing</p>
 </footer>
 
 <script>
-  var cursor = document.getElementById('cursor');
-  var ring   = document.getElementById('cursorRing');
-  document.addEventListener('mousemove', function(e) {
-    cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
-    ring.style.left   = e.clientX + 'px'; ring.style.top   = e.clientY + 'px';
-  });
-
   var obs = new IntersectionObserver(function(entries) {
     entries.forEach(function(e, i) {
       if (e.isIntersecting) {

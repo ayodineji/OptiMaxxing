@@ -1,7 +1,7 @@
 {
   "sections": {
     "header": { "type": "optimaxxing-header", "settings": {} },
-    "main": { "type": "optimaxxing-bundles", "settings": {} }
+    "main": { "type": "optimaxxing-landing", "settings": {} }
   },
   "order": ["header", "main"]
 }

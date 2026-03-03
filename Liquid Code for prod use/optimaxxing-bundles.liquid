@@ -1,0 +1,493 @@
+{% comment %}
+  OPTIMAXXING — Bundles Page Section
+  File: Sections/optimaxxing-bundles.liquid
+
+  HOW TO HOOK UP:
+  1. Paste into Sections/optimaxxing-bundles.liquid
+  2. Create Templates/page.bundles.json pointing to this section
+  3. Create a Page in admin: handle "bundles", assign template "page.bundles"
+
+  BUNDLE PRODUCTS:
+  Create each bundle in the Shopify Bundles app, then reference by handle below.
+  Update handles in the assign block if your product URLs differ.
+{% endcomment %}
+
+{% comment %} ── BUNDLE PRODUCT HANDLES ── {% endcomment %}
+{% comment %} Update these handles to match your actual bundle product URLs {% endcomment %}
+{% assign b01 = all_products['full-optimization-starter'] %}
+{% assign b02 = all_products['facemaxx-starter-kit'] %}
+{% assign b03 = all_products['facemaxx-pro-kit'] %}
+{% assign b04 = all_products['sleepmaxx-night-protocol'] %}
+{% assign b05 = all_products['gymmaxx-recovery-stack'] %}
+{% assign b06 = all_products['framemaxx-daily-kit'] %}
+{% assign b07 = all_products['stylemaxx-grooming-kit'] %}
+{% assign b08 = all_products['mindmaxx-focus-protocol'] %}
+{% assign b09 = all_products['cleanmaxx-clean-living-kit'] %}
+
+<style>
+  /* HERO */
+  .hero{padding:140px 48px 80px;position:relative;overflow:hidden;border-bottom:1px solid var(--border);}
+  .hero-bg{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 60% at 80% 50%,rgba(200,255,0,0.04) 0%,transparent 70%),repeating-linear-gradient(0deg,transparent,transparent 80px,rgba(255,255,255,0.012) 80px,rgba(255,255,255,0.012) 81px),repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(255,255,255,0.012) 80px,rgba(255,255,255,0.012) 81px);}
+  .hero-eyebrow{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:5px;text-transform:uppercase;color:var(--neon) !important;margin-bottom:28px;opacity:0;animation:fadeUp 0.6s 0.1s forwards;}
+  .hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,10vw,130px);line-height:0.88;color:var(--white) !important;max-width:900px;margin-bottom:40px;opacity:0;animation:fadeUp 0.7s 0.2s forwards;}
+  .hero-title .line2{color:var(--neon) !important;}
+  .hero-sub{font-size:17px;color:var(--dim) !important;line-height:2;max-width:580px;opacity:0;animation:fadeUp 0.7s 0.35s forwards;margin-bottom:48px;}
+  .hero-stats{display:flex;gap:48px;flex-wrap:wrap;opacity:0;animation:fadeUp 0.6s 0.5s forwards;}
+  .stat{display:flex;flex-direction:column;gap:4px;}
+  .stat-n{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--white) !important;line-height:1;}
+  .stat-l{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim) !important;}
+
+  /* TICKER */
+  .ticker{border-bottom:1px solid var(--border);overflow:hidden;white-space:nowrap;padding:12px 0;background:var(--neon);}
+  .ticker-inner{display:inline-block;animation:tickerScroll 25s linear infinite;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--black) !important;}
+  @keyframes tickerScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* FILTER BAR */
+  .filter-bar{display:flex;align-items:center;gap:8px;padding:14px 48px;background:var(--gray);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;}
+  .filter-bar::-webkit-scrollbar{display:none;}
+  .filter-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim) !important;margin-right:8px;flex-shrink:0;}
+  .filter-btn{background:none;border:1px solid var(--border);cursor:pointer;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim) !important;padding:7px 14px;white-space:nowrap;transition:all 0.2s;}
+  .filter-btn:hover{border-color:var(--neon);color:var(--neon) !important;}
+  .filter-btn.active{background:var(--neon);border-color:var(--neon);color:var(--black) !important;}
+
+  /* BUNDLES */
+  .bundles-section{padding:72px 48px;}
+  .section-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--neon) !important;display:block;margin-bottom:8px;}
+  .section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,5vw,64px);color:var(--white) !important;line-height:1;margin-bottom:48px;}
+  .bundle-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:2px;}
+
+  /* BUNDLE CARDS */
+  .bundle-card{background:var(--gray);display:flex;flex-direction:column;overflow:hidden;transition:background 0.2s;}
+  .bundle-card:hover{background:#161616;}
+  .bundle-card.featured{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;}
+
+  .card-visual{position:relative;background:var(--mid);padding:40px;display:flex;align-items:center;justify-content:center;min-height:280px;}
+  .card-visual-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:200px;}
+  .card-visual-item{width:80px;height:80px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;}
+  .card-visual-item svg{width:32px;height:32px;stroke:var(--dim);}
+  .card-visual-item.accent svg{stroke:var(--neon);}
+  .proto-badge{position:absolute;top:16px;left:16px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--neon) !important;background:rgba(200,255,0,0.08);padding:4px 10px;}
+  .save-badge{position:absolute;bottom:16px;right:16px;font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--neon) !important;line-height:1;}
+  .save-badge span{display:block;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--dim) !important;}
+
+  .card-body{padding:32px;display:flex;flex-direction:column;flex:1;}
+  .card-num{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim) !important;margin-bottom:8px;}
+  .card-name{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--white) !important;line-height:1;margin-bottom:8px;}
+  .bundle-card.featured .card-name{font-size:48px;}
+  .card-tagline{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--neon) !important;margin-bottom:16px;}
+  .card-why{font-size:14px;color:var(--dim) !important;line-height:1.85;margin-bottom:24px;flex:1;}
+  .bundle-card.featured .card-why{font-size:15px;max-width:480px;}
+  .card-items{margin-bottom:24px;}
+  .card-items-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim) !important;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+  .item-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);}
+  .item-dot{width:4px;height:4px;background:var(--neon);flex-shrink:0;}
+  .item-name{font-size:13px;color:var(--white) !important;flex:1;}
+  .item-val{font-family:'Space Mono',monospace;font-size:10px;color:var(--dim) !important;text-decoration:line-through;}
+  .card-pricing{display:flex;align-items:baseline;gap:12px;margin-bottom:20px;}
+  .price-now{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--neon) !important;line-height:1;}
+  .bundle-card.featured .price-now{font-size:64px;}
+  .price-was{font-family:'Space Mono',monospace;font-size:14px;color:var(--dim) !important;text-decoration:line-through;}
+  .price-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--neon) !important;background:rgba(200,255,0,0.1);padding:3px 8px;}
+  .card-cta{display:block;width:100%;padding:16px;text-align:center;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;border:1px solid var(--border);color:var(--white) !important;background:transparent;cursor:pointer;transition:all 0.2s;text-decoration:none !important;}
+  .card-cta:hover{background:var(--neon);border-color:var(--neon);color:var(--black) !important;}
+  .bundle-card.featured .card-cta{background:var(--neon);border-color:var(--neon);color:var(--black) !important;}
+  .bundle-card.featured .card-cta:hover{opacity:0.85;}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease;}
+  .reveal.visible{opacity:1;transform:translateY(0);}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+  @media(max-width:768px){
+    .hero{padding:100px 20px 60px;}
+    .hero-stats{gap:24px;}
+    .filter-bar{padding:12px 20px;}
+    .bundles-section{padding:48px 20px;}
+    .bundle-grid{grid-template-columns:1fr;}
+    .bundle-card.featured{grid-template-columns:1fr;}
+    .card-visual{min-height:180px;padding:24px;}
+    .card-body{padding:24px;}
+  }
+</style>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <p class="hero-eyebrow">// The Optimaxxing Stack</p>
+  <h1 class="hero-title">
+    SERIOUS MEN<br>
+    <span class="line2">STACK TOOLS.</span>
+  </h1>
+  <p class="hero-sub">Individual tools optimize one variable. Protocol bundles optimize the system. Every bundle is built around a specific outcome — with the exact tools that compound into measurable results.</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-n">{{ section.settings.bundle_count | default: 9 }}</span><span class="stat-l">Protocol Bundles</span></div>
+    <div class="stat"><span class="stat-n">30%</span><span class="stat-l">Average Savings</span></div>
+    <div class="stat"><span class="stat-n">30</span><span class="stat-l">Day Guarantee</span></div>
+    <div class="stat"><span class="stat-n">7</span><span class="stat-l">Protocols Covered</span></div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <span class="ticker-inner">SAVE 30% VS INDIVIDUAL &nbsp;&middot;&nbsp; 30-DAY PROTOCOL GUARANTEE &nbsp;&middot;&nbsp; FREE TRACKED SHIPPING &nbsp;&middot;&nbsp; OPTIMIZED FOR RESULTS NOT AESTHETICS &nbsp;&middot;&nbsp; STACK THE PROTOCOLS &nbsp;&middot;&nbsp; SAVE 30% VS INDIVIDUAL &nbsp;&middot;&nbsp; 30-DAY PROTOCOL GUARANTEE &nbsp;&middot;&nbsp; FREE TRACKED SHIPPING &nbsp;&middot;&nbsp; OPTIMIZED FOR RESULTS NOT AESTHETICS &nbsp;&middot;&nbsp; STACK THE PROTOCOLS &nbsp;&middot;&nbsp;</span>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <span class="filter-label">Filter:</span>
+  <button class="filter-btn active" onclick="filterBundles('all', this)">All Bundles</button>
+  <button class="filter-btn" onclick="filterBundles('face', this)">Facemaxx</button>
+  <button class="filter-btn" onclick="filterBundles('sleep', this)">Sleepmaxx</button>
+  <button class="filter-btn" onclick="filterBundles('gym', this)">Gymmaxx</button>
+  <button class="filter-btn" onclick="filterBundles('frame', this)">Framemaxx</button>
+  <button class="filter-btn" onclick="filterBundles('style', this)">Stylemaxx</button>
+  <button class="filter-btn" onclick="filterBundles('mind', this)">Mindmaxx</button>
+  <button class="filter-btn" onclick="filterBundles('clean', this)" style="--btn-neon:#00CFFF">Cleanmaxx</button>
+  <button class="filter-btn" onclick="filterBundles('full', this)">Full Stack</button>
+</div>
+
+<!-- BUNDLES -->
+<section class="bundles-section">
+  <span class="section-label">// Protocol Stacks</span>
+  <h2 class="section-title">CHOOSE YOUR STACK</h2>
+
+  <div class="bundle-grid" id="bundleGrid">
+
+    {% comment %} ── MACRO: Render a bundle card ── {% endcomment %}
+    {% comment %} Each bundle is a product created in the Bundles app {% endcomment %}
+
+    {% comment %} ── 01: FULL OPTIMIZATION STARTER (Featured) ── {% endcomment %}
+    {% if b01 != blank %}
+    <div class="bundle-card featured reveal" data-proto="full">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        </div>
+        <div class="proto-badge">Most Popular</div>
+        {% if b01.compare_at_price > b01.price %}
+          {% assign save_pct = b01.compare_at_price | minus: b01.price | times: 100 | divided_by: b01.compare_at_price %}
+          <div class="save-badge">{{ save_pct }}%<span>saved</span></div>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 01 &nbsp;&middot;&nbsp; Full Stack</div>
+        <div class="card-name">{{ b01.title | upcase }}</div>
+        <div class="card-tagline">One tool from every protocol. The complete system.</div>
+        <div class="card-why">{{ b01.description | strip_html }}</div>
+        <div class="card-pricing">
+          <div class="price-now">{{ b01.price | money_without_trailing_zeros }}</div>
+          {% if b01.compare_at_price > b01.price %}
+            <div class="price-was">{{ b01.compare_at_price | money_without_trailing_zeros }}</div>
+            <div class="price-label">save {{ b01.compare_at_price | minus: b01.price | money_without_trailing_zeros }}</div>
+          {% endif %}
+        </div>
+        <a href="{{ b01.url }}" class="card-cta">Add Full Stack To Protocol &rarr;</a>
+      </div>
+    </div>
+    {% endif %}
+
+    {% comment %} ── 02: FACEMAXX STARTER KIT ── {% endcomment %}
+    {% if b02 != blank %}
+    <div class="bundle-card reveal" data-proto="face">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="8" r="5"/><path d="M3 21v-1a9 9 0 0118 0v1"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg></div>
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        </div>
+        <div class="proto-badge">Facemaxx // 01</div>
+        {% if b02.compare_at_price > b02.price %}
+          {% assign save_pct = b02.compare_at_price | minus: b02.price | times: 100 | divided_by: b02.compare_at_price %}
+          <div class="save-badge">{{ save_pct }}%<span>saved</span></div>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 02 &nbsp;&middot;&nbsp; Facemaxx</div>
+        <div class="card-name">{{ b02.title | upcase }}</div>
+        <div class="card-tagline">The entry protocol. Results in 2 weeks.</div>
+        <div class="card-why">{{ b02.description | strip_html }}</div>
+        <div class="card-pricing">
+          <div class="price-now">{{ b02.price | money_without_trailing_zeros }}</div>
+          {% if b02.compare_at_price > b02.price %}
+            <div class="price-was">{{ b02.compare_at_price | money_without_trailing_zeros }}</div>
+            <div class="price-label">save {{ b02.compare_at_price | minus: b02.price | money_without_trailing_zeros }}</div>
+          {% endif %}
+        </div>
+        <a href="{{ b02.url }}" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+    {% endif %}
+
+    {% comment %} ── 03: FACEMAXX PRO KIT ── {% endcomment %}
+    {% if b03 != blank %}
+    <div class="bundle-card reveal" data-proto="face">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="8" r="5"/><path d="M3 21v-1a9 9 0 0118 0v1"/></svg></div>
+        </div>
+        <div class="proto-badge">Facemaxx Pro // 01</div>
+        {% if b03.compare_at_price > b03.price %}
+          {% assign save_pct = b03.compare_at_price | minus: b03.price | times: 100 | divided_by: b03.compare_at_price %}
+          <div class="save-badge">{{ save_pct }}%<span>saved</span></div>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 03 &nbsp;&middot;&nbsp; Facemaxx Pro</div>
+        <div class="card-name">{{ b03.title | upcase }}</div>
+        <div class="card-tagline">Clinical-grade. The tools that actually change tissue.</div>
+        <div class="card-why">{{ b03.description | strip_html }}</div>
+        <div class="card-pricing">
+          <div class="price-now">{{ b03.price | money_without_trailing_zeros }}</div>
+          {% if b03.compare_at_price > b03.price %}
+            <div class="price-was">{{ b03.compare_at_price | money_without_trailing_zeros }}</div>
+            <div class="price-label">save {{ b03.compare_at_price | minus: b03.price | money_without_trailing_zeros }}</div>
+          {% endif %}
+        </div>
+        <a href="{{ b03.url }}" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+    {% endif %}
+
+    {% comment %} ── 04: SLEEPMAXX NIGHT PROTOCOL ── {% endcomment %}
+    {% if b04 != blank %}
+    <div class="bundle-card reveal" data-proto="sleep">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg></div>
+        </div>
+        <div class="proto-badge">Sleepmaxx // 02</div>
+        {% if b04.compare_at_price > b04.price %}
+          {% assign save_pct = b04.compare_at_price | minus: b04.price | times: 100 | divided_by: b04.compare_at_price %}
+          <div class="save-badge">{{ save_pct }}%<span>saved</span></div>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 04 &nbsp;&middot;&nbsp; Sleepmaxx</div>
+        <div class="card-name">{{ b04.title | upcase }}</div>
+        <div class="card-tagline">Optimize the 8 hours where everything compounds.</div>
+        <div class="card-why">{{ b04.description | strip_html }}</div>
+        <div class="card-pricing">
+          <div class="price-now">{{ b04.price | money_without_trailing_zeros }}</div>
+          {% if b04.compare_at_price > b04.price %}
+            <div class="price-was">{{ b04.compare_at_price | money_without_trailing_zeros }}</div>
+            <div class="price-label">save {{ b04.compare_at_price | minus: b04.price | money_without_trailing_zeros }}</div>
+          {% endif %}
+        </div>
+        <a href="{{ b04.url }}" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+    {% endif %}
+
+    {% comment %} ── 05: GYMMAXX RECOVERY STACK ── {% endcomment %}
+    {% if b05 != blank %}
+    <div class="bundle-card reveal" data-proto="gym">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg></div>
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        </div>
+        <div class="proto-badge">Gymmaxx // 03</div>
+        {% if b05.compare_at_price > b05.price %}
+          {% assign save_pct = b05.compare_at_price | minus: b05.price | times: 100 | divided_by: b05.compare_at_price %}
+          <div class="save-badge">{{ save_pct }}%<span>saved</span></div>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 05 &nbsp;&middot;&nbsp; Gymmaxx</div>
+        <div class="card-name">{{ b05.title | upcase }}</div>
+        <div class="card-tagline">Training is the stimulus. Recovery is the result.</div>
+        <div class="card-why">{{ b05.description | strip_html }}</div>
+        <div class="card-pricing">
+          <div class="price-now">{{ b05.price | money_without_trailing_zeros }}</div>
+          {% if b05.compare_at_price > b05.price %}
+            <div class="price-was">{{ b05.compare_at_price | money_without_trailing_zeros }}</div>
+            <div class="price-label">save {{ b05.compare_at_price | minus: b05.price | money_without_trailing_zeros }}</div>
+          {% endif %}
+        </div>
+        <a href="{{ b05.url }}" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+    {% endif %}
+
+    {% comment %} ── 06: FRAMEMAXX DAILY KIT ── {% endcomment %}
+    {% if b06 != blank %}
+    <div class="bundle-card reveal" data-proto="frame">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="8" r="5"/><path d="M3 21v-1a9 9 0 0118 0v1"/></svg></div>
+        </div>
+        <div class="proto-badge">Framemaxx // 04</div>
+        {% if b06.compare_at_price > b06.price %}
+          {% assign save_pct = b06.compare_at_price | minus: b06.price | times: 100 | divided_by: b06.compare_at_price %}
+          <div class="save-badge">{{ save_pct }}%<span>saved</span></div>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 06 &nbsp;&middot;&nbsp; Framemaxx</div>
+        <div class="card-name">{{ b06.title | upcase }}</div>
+        <div class="card-tagline">Frame is the variable that speaks before you do.</div>
+        <div class="card-why">{{ b06.description | strip_html }}</div>
+        <div class="card-pricing">
+          <div class="price-now">{{ b06.price | money_without_trailing_zeros }}</div>
+          {% if b06.compare_at_price > b06.price %}
+            <div class="price-was">{{ b06.compare_at_price | money_without_trailing_zeros }}</div>
+            <div class="price-label">save {{ b06.compare_at_price | minus: b06.price | money_without_trailing_zeros }}</div>
+          {% endif %}
+        </div>
+        <a href="{{ b06.url }}" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+    {% endif %}
+
+    {% comment %} ── 07: STYLEMAXX GROOMING KIT ── {% endcomment %}
+    {% if b07 != blank %}
+    <div class="bundle-card reveal" data-proto="style">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="8" r="5"/><path d="M3 21v-1a9 9 0 0118 0v1"/></svg></div>
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+        </div>
+        <div class="proto-badge">Stylemaxx // 05</div>
+        {% if b07.compare_at_price > b07.price %}
+          {% assign save_pct = b07.compare_at_price | minus: b07.price | times: 100 | divided_by: b07.compare_at_price %}
+          <div class="save-badge">{{ save_pct }}%<span>saved</span></div>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 07 &nbsp;&middot;&nbsp; Stylemaxx</div>
+        <div class="card-name">{{ b07.title | upcase }}</div>
+        <div class="card-tagline">The details are what separate you from most men.</div>
+        <div class="card-why">{{ b07.description | strip_html }}</div>
+        <div class="card-pricing">
+          <div class="price-now">{{ b07.price | money_without_trailing_zeros }}</div>
+          {% if b07.compare_at_price > b07.price %}
+            <div class="price-was">{{ b07.compare_at_price | money_without_trailing_zeros }}</div>
+            <div class="price-label">save {{ b07.compare_at_price | minus: b07.price | money_without_trailing_zeros }}</div>
+          {% endif %}
+        </div>
+        <a href="{{ b07.url }}" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+    {% endif %}
+
+    {% comment %} ── 08: MINDMAXX FOCUS PROTOCOL ── {% endcomment %}
+    {% if b08 != blank %}
+    <div class="bundle-card reveal" data-proto="mind">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></div>
+          <div class="card-visual-item accent"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 3"/></svg></div>
+        </div>
+        <div class="proto-badge">Mindmaxx // 06</div>
+        {% if b08.compare_at_price > b08.price %}
+          {% assign save_pct = b08.compare_at_price | minus: b08.price | times: 100 | divided_by: b08.compare_at_price %}
+          <div class="save-badge">{{ save_pct }}%<span>saved</span></div>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 08 &nbsp;&middot;&nbsp; Mindmaxx</div>
+        <div class="card-name">{{ b08.title | upcase }}</div>
+        <div class="card-tagline">Cognitive output is a variable. Optimize it.</div>
+        <div class="card-why">{{ b08.description | strip_html }}</div>
+        <div class="card-pricing">
+          <div class="price-now">{{ b08.price | money_without_trailing_zeros }}</div>
+          {% if b08.compare_at_price > b08.price %}
+            <div class="price-was">{{ b08.compare_at_price | money_without_trailing_zeros }}</div>
+            <div class="price-label">save {{ b08.compare_at_price | minus: b08.price | money_without_trailing_zeros }}</div>
+          {% endif %}
+        </div>
+        <a href="{{ b08.url }}" class="card-cta">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+    {% endif %}
+
+    {% comment %} ── 09: CLEANMAXX CLEAN LIVING KIT ── {% endcomment %}
+    {% if b09 != blank %}
+    <div class="bundle-card reveal" data-proto="clean">
+      <div class="card-visual">
+        <div class="card-visual-grid">
+          <div class="card-visual-item" style="border-color:#00CFFF33"><svg viewBox="0 0 24 24" fill="none" stroke-width="1" style="stroke:#00CFFF"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg></div>
+          <div class="card-visual-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="1"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div class="card-visual-item" style="border-color:#00CFFF33"><svg viewBox="0 0 24 24" fill="none" stroke-width="1" style="stroke:#00CFFF"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        </div>
+        <div class="proto-badge" style="color:#00CFFF;background:rgba(0,207,255,0.08)">Cleanmaxx // 07</div>
+        {% if b09.compare_at_price > b09.price %}
+          {% assign save_pct = b09.compare_at_price | minus: b09.price | times: 100 | divided_by: b09.compare_at_price %}
+          <div class="save-badge" style="color:#00CFFF">{{ save_pct }}%<span>saved</span></div>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        <div class="card-num">// Bundle 09 &nbsp;&middot;&nbsp; Cleanmaxx</div>
+        <div class="card-name">{{ b09.title | upcase }}</div>
+        <div class="card-tagline" style="color:#00CFFF !important">Eliminate what's working against you.</div>
+        <div class="card-why">{{ b09.description | strip_html }}</div>
+        <div class="card-pricing">
+          <div class="price-now" style="color:#00CFFF !important">{{ b09.price | money_without_trailing_zeros }}</div>
+          {% if b09.compare_at_price > b09.price %}
+            <div class="price-was">{{ b09.compare_at_price | money_without_trailing_zeros }}</div>
+            <div class="price-label" style="color:#00CFFF !important;background:rgba(0,207,255,0.1)">save {{ b09.compare_at_price | minus: b09.price | money_without_trailing_zeros }}</div>
+          {% endif %}
+        </div>
+        <a href="{{ b09.url }}" class="card-cta" style="border-color:#00CFFF33">Add To Protocol &rarr;</a>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+<script>
+  function filterBundles(proto, btn){
+    document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+    document.querySelectorAll('.bundle-card').forEach(function(card){
+      if(proto==='all'||card.dataset.proto===proto){
+        card.style.display='';
+      } else {
+        card.style.display='none';
+      }
+    });
+  }
+
+  var revealObs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add('visible');revealObs.unobserve(e.target);}
+    });
+  },{threshold:0.08});
+  document.querySelectorAll('.reveal').forEach(function(el){revealObs.observe(el)});
+</script>
+
+{% schema %}
+{
+  "name": "Optimaxxing Bundles",
+  "settings": [
+    {
+      "type": "number",
+      "id": "bundle_count",
+      "label": "Number of bundles (displayed in hero)",
+      "default": 9
+    }
+  ],
+  "presets": [{ "name": "Optimaxxing Bundles" }]
+}
+{% endschema %}

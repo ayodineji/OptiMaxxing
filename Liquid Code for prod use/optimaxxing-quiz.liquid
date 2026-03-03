@@ -1,11 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>OPTIMAXXING — Start Your Protocol</title>
+{% comment %}
+  OPTIMAXXING — Quiz Page Section
+  File: Sections/optimaxxing-quiz.liquid
+
+  This page uses its OWN minimal nav (logo + back link), NOT the shared header.
+  Template: page.quiz.json (no header section)
+{% endcomment %}
+
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+  .section-header, header-drawer, .header-wrapper, .header, #shopify-section-header, .announcement-bar { display: none !important; }
   :root {
     --black: #050505;
     --neon:  #C8FF00;
@@ -16,7 +19,7 @@
     --border:#1e1e1e;
   }
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; overflow-x: hidden; min-height: 100vh; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; overflow-x: hidden; min-height: 100vh; cursor: pointer; }
 
 
   /* NAV */
@@ -143,15 +146,15 @@
     .options { grid-template-columns: 1fr; }
     .result-screen { padding: 60px 20px; }
     .also-grid { grid-template-columns: 1fr; }
+    body { cursor: auto; }
   }
 </style>
 </head>
 <body>
-
-
+</style>
 <nav class="nav">
-  <a href="#" class="nav-logo">OPTIMA<span>XXING</span></a>
-  <a href="optimaxxing-about.html" class="nav-back">Back to Mission</a>
+  <a href="{{ routes.root_url }}" class="nav-logo">OPTIMA<span>XXING</span></a>
+  <a href="{{ routes.root_url }}pages/about" class="nav-back">Back to Mission</a>
 </nav>
 
 <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
@@ -188,6 +191,13 @@
 </div>
 
 <script>
+  // Cursor
+  var cur = document.getElementById('cursor');
+  var ring = document.getElementById('cursorRing');
+  document.addEventListener('mousemove', function(e) {
+    cur.style.left = e.clientX + 'px'; cur.style.top = e.clientY + 'px';
+    ring.style.left = e.clientX + 'px'; ring.style.top = e.clientY + 'px';
+  });
 
   // QUIZ DATA
   var questions = [
@@ -505,7 +515,7 @@
     b.items.forEach(function(item) { html += '<div class="bundle-item">' + item + '</div>'; });
     html += '</div>';
     html += '<div class="bundle-pricing"><div class="bundle-price">' + b.price + '</div><div class="bundle-was">' + b.was + '</div><div class="bundle-save">' + b.save + '</div></div>';
-    html += '<a href="optimaxxing-bundles.html" class="btn-add">Add To Protocol →</a>';
+    html += '<a href="{{ routes.root_url }}pages/bundles" class="btn-add">Add To Protocol →</a>';
     html += '</div>';
 
     if (b.related && b.related.length) {
@@ -513,7 +523,7 @@
       html += '<p class="also-label">// You may also want</p>';
       html += '<div class="also-grid">';
       b.related.forEach(function(r) {
-        html += '<a href="optimaxxing-bundles.html" class="also-card">';
+        html += '<a href="{{ routes.root_url }}pages/bundles" class="also-card">';
         html += '<div class="also-num">' + r.num + '</div>';
         html += '<div class="also-name">' + r.name + '</div>';
         html += '<div class="also-price">' + r.price + '</div>';
@@ -535,5 +545,11 @@
     showScreen('intro');
   }
 </script>
-</body>
-</html>
+
+{% schema %}
+{
+  "name": "Optimaxxing Quiz",
+  "settings": [],
+  "presets": [{ "name": "Optimaxxing Quiz" }]
+}
+{% endschema %}

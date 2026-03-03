@@ -2,25 +2,14 @@
   OPTIMAXXING — Product Page Section
   File: Sections/optimaxxing-product.liquid
 
-  HOW TO HOOK UP:
-  1. Paste this file into Sections/optimaxxing-product.liquid
-  2. Create Templates/product.json with this content:
-     {
-       "sections": {
-         "main": { "type": "optimaxxing-product", "settings": {} }
-       },
-       "order": ["main"]
-     }
-  3. Save both files. All product pages now use this template.
+  Uses shared header via product.json template.
+  Includes Judge.me CSS overrides for dark/neon theme.
 {% endcomment %}
 
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
 {% assign prod = product %}
-{% assign cart_count = cart.item_count %}
 {% assign first_variant = prod.selected_or_first_available_variant %}
 
-{% comment %} Identify which protocol this product belongs to {% endcomment %}
+{% comment %} Identify protocol {% endcomment %}
 {% assign proto_tag = '' %}
 {% assign proto_url = '' %}
 {% for tag in prod.tags %}
@@ -30,375 +19,172 @@
   {% if tag == 'framemaxx' %}{% assign proto_tag = 'Framemaxx' %}{% assign proto_url = '/collections/framemaxx-protocol' %}{% endif %}
   {% if tag == 'stylemaxx' %}{% assign proto_tag = 'Stylemaxx' %}{% assign proto_url = '/collections/stylemaxx-protocol' %}{% endif %}
   {% if tag == 'mindmaxx'  %}{% assign proto_tag = 'Mindmaxx'  %}{% assign proto_url = '/collections/mindmaxx-protocol'  %}{% endif %}
+  {% if tag == 'cleanmaxx' %}{% assign proto_tag = 'Cleanmaxx' %}{% assign proto_url = '/collections/cleanmaxx-protocol' %}{% endif %}
 {% endfor %}
-{% comment %} Fallback: use collection if tags not set {% endcomment %}
 {% if proto_tag == '' and prod.collections.size > 0 %}
   {% assign proto_tag = prod.collections.first.title %}
   {% assign proto_url = prod.collections.first.url %}
 {% endif %}
 
+{% comment %} Calculate savings {% endcomment %}
+{% if prod.compare_at_price > prod.price %}
+  {% assign savings = prod.compare_at_price | minus: prod.price | times: 100 | divided_by: prod.compare_at_price %}
+{% endif %}
+
 <style>
-  :root {
-    --black:  #050505;
-    --neon:   #C8FF00;
-    --white:  #F5F5F5;
-    --gray:   #141414;
-    --mid:    #202020;
-    --dim:    #888;
-    --border: #1e1e1e;
-  }
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-
-  body, .shopify-section, main, #MainContent { background: var(--black) !important; color: var(--white) !important; }
-  body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
-  .section-header, header-drawer, .header-wrapper, .header, #shopify-section-header, .announcement-bar { display: none !important; }
-
-  h1, h2, h3, h4, h5, h6 { color: var(--white) !important; }
-  p, li, span, label { color: var(--dim) !important; }
-  a { color: inherit; text-decoration: none; }
-
-  /* NAV */
-  .om-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 0 48px; height: 64px; background: rgba(5,5,5,0.96); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
-  .om-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 4px; color: var(--neon) !important; text-decoration: none !important; flex-shrink: 0; }
-  .om-logo .logo-rest { color: var(--white) !important; }
-  .om-nav-center { position: relative; display: flex; align-items: center; }
-  .om-protocols-btn { background: none; border: none; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim) !important; padding: 0 16px; height: 64px; transition: color 0.2s; display: flex; align-items: center; gap: 8px; }
-  .om-protocols-btn:hover, .om-protocols-btn.open { color: var(--neon) !important; }
-  .om-chevron { transition: transform 0.2s; font-size: 8px; display: inline-block; }
-  .om-protocols-btn.open .om-chevron { transform: rotate(180deg); }
-  .om-dropdown { position: absolute; top: 64px; left: 50%; transform: translateX(-50%); background: #080808; border: 1px solid var(--border); border-top: 2px solid var(--neon); display: none; min-width: 220px; z-index: 1001; box-shadow: 0 16px 48px rgba(0,0,0,0.6); }
-  .om-dropdown.open { display: block; }
-  .om-dropdown a { display: flex; align-items: center; gap: 12px; padding: 14px 20px; text-decoration: none !important; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim) !important; border-bottom: 1px solid var(--border); transition: background 0.15s, color 0.15s; }
-  .om-dropdown a:last-child { border-bottom: none; }
-  .om-dropdown a:hover { background: var(--gray); color: var(--neon) !important; }
-  .om-dropdown .pnum { color: var(--neon) !important; font-size: 9px; opacity: 0.6; }
-  .om-nav-right { display: flex; align-items: center; gap: 14px; }
-  .om-cart-btn { position: relative; background: none; border: none; cursor: pointer; color: var(--white) !important; padding: 8px; display: flex; align-items: center; transition: color 0.2s; }
-  .om-cart-btn:hover { color: var(--neon) !important; }
-  .om-cart-btn svg { width: 22px; height: 22px; stroke: currentColor; }
-  .om-badge { position: absolute; top: 1px; right: 1px; background: var(--neon); color: var(--black) !important; font-family: 'Space Mono', monospace; font-size: 8px; font-weight: 700; width: 15px; height: 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-  .om-badge.hidden { display: none; }
-  .om-back-link { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim) !important; text-decoration: none !important; transition: color 0.2s; }
-  .om-back-link:hover { color: var(--neon) !important; }
-  .om-hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; gap: 5px; padding: 8px; }
-  .om-hamburger span { display: block; width: 22px; height: 1.5px; background: var(--white); transition: all 0.25s; }
-  .om-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-  .om-hamburger.open span:nth-child(2) { opacity: 0; }
-  .om-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
-  .om-mobile-menu { display: none; position: fixed; top: 64px; left: 0; right: 0; background: #080808; border-bottom: 1px solid var(--border); z-index: 999; padding: 8px 0; }
-  .om-mobile-menu.open { display: block; }
-  .om-mobile-menu a { display: flex; align-items: center; gap: 12px; padding: 14px 20px; text-decoration: none !important; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim) !important; border-bottom: 1px solid var(--border); }
-  .om-mobile-menu a:last-child { border-bottom: none; }
-  .om-mobile-menu a:hover { color: var(--neon) !important; }
-
-  /* CART DRAWER */
-  .om-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 1999; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
-  .om-overlay.open { opacity: 1; pointer-events: all; }
-  .om-drawer { position: fixed; top: 0; right: 0; width: 400px; max-width: 100vw; height: 100vh; background: #080808; border-left: 1px solid var(--border); z-index: 2000; display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
-  .om-drawer.open { transform: translateX(0); }
-  .om-drawer-head { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-  .om-drawer-head h2 { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--white) !important; letter-spacing: 2px; }
-  .om-drawer-head h2 span { color: var(--neon) !important; }
-  .om-drawer-x { background: none; border: none; cursor: pointer; color: var(--dim) !important; font-size: 22px; padding: 4px; transition: color 0.2s; }
-  .om-drawer-x:hover { color: var(--white) !important; }
-  .om-drawer-body { flex: 1; overflow-y: auto; padding: 16px 24px; }
-  .om-empty-cart { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; }
-  .om-empty-cart p { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim) !important; }
-  .om-empty-cart a { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--neon) !important; border-bottom: 1px solid var(--neon); padding-bottom: 2px; }
-  .om-cart-item { display: flex; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--border); }
-  .om-cart-item img { width: 64px; height: 64px; object-fit: cover; flex-shrink: 0; }
-  .om-item-info { flex: 1; }
-  .om-item-name { font-family: 'Bebas Neue', sans-serif; font-size: 17px; color: var(--white) !important; line-height: 1.1; margin-bottom: 4px; }
-  .om-item-price { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--neon) !important; margin-bottom: 10px; }
-  .om-qty-row { display: flex; align-items: center; gap: 10px; }
-  .om-qty-btn { background: var(--mid); border: none; color: var(--white) !important; width: 24px; height: 24px; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
-  .om-qty-btn:hover { background: var(--neon); color: var(--black) !important; }
-  .om-qty-val { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--white) !important; min-width: 20px; text-align: center; }
-  .om-item-remove { background: none; border: none; cursor: pointer; font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--dim) !important; margin-top: 8px; display: block; }
-  .om-drawer-foot { padding: 20px 24px; border-top: 1px solid var(--border); flex-shrink: 0; }
-  .om-subtotal-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
-  .om-subtotal-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim) !important; }
-  .om-subtotal-price { font-family: 'Space Mono', monospace; font-size: 20px; font-weight: 700; color: var(--neon) !important; }
-  .om-checkout { display: block; width: 100%; padding: 15px; text-align: center; background: var(--neon); color: var(--black) !important; font-family: 'Space Mono', monospace; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; text-decoration: none !important; }
-
   /* BREADCRUMB */
-  .om-breadcrumb {
-    padding: 80px 48px 0;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .breadcrumb-link { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim) !important; text-decoration: none !important; transition: color 0.2s; }
-  .breadcrumb-link:hover { color: var(--neon) !important; }
-  .breadcrumb-sep { font-size: 10px; color: var(--dim) !important; }
-  .breadcrumb-current { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--white) !important; }
+  .om-breadcrumb{padding:80px 48px 0;display:flex;align-items:center;gap:10px;}
+  .breadcrumb-link{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim) !important;text-decoration:none !important;transition:color 0.2s;}
+  .breadcrumb-link:hover{color:var(--neon) !important;}
+  .breadcrumb-sep{font-size:10px;color:var(--dim) !important;}
+  .breadcrumb-current{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--white) !important;}
 
   /* PRODUCT LAYOUT */
-  .product-wrap {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 2px; padding: 32px 48px 0;
-  }
+  .product-wrap{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:32px 48px 0;}
 
   /* Images */
-  .product-images { position: sticky; top: 80px; align-self: start; }
-  .main-img-wrap { position: relative; overflow: hidden; aspect-ratio: 1; background: var(--gray); margin-bottom: 2px; }
-  .main-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; cursor: zoom-in; }
-  .main-img-wrap:hover img { transform: scale(1.04); }
-  .main-img-placeholder { width: 100%; aspect-ratio: 1; background: var(--mid); display: flex; align-items: center; justify-content: center; }
-  .main-img-placeholder span { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dim) !important; letter-spacing: 2px; text-transform: uppercase; }
-  .img-thumbnails { display: flex; gap: 2px; flex-wrap: wrap; }
-  .img-thumb {
-    width: 80px; height: 80px; object-fit: cover; cursor: pointer;
-    border: 1px solid transparent; transition: border-color 0.15s; opacity: 0.6;
-  }
-  .img-thumb.active, .img-thumb:hover { border-color: var(--neon); opacity: 1; }
+  .product-images{position:sticky;top:80px;align-self:start;}
+  .main-img-wrap{position:relative;overflow:hidden;aspect-ratio:1;background:var(--gray);margin-bottom:2px;}
+  .main-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s ease;cursor:zoom-in;}
+  .main-img-wrap:hover img{transform:scale(1.04);}
+  .img-thumbnails{display:flex;gap:2px;flex-wrap:wrap;}
+  .img-thumb{width:80px;height:80px;object-fit:cover;cursor:pointer;border:1px solid transparent;transition:border-color 0.15s;opacity:0.6;}
+  .img-thumb.active,.img-thumb:hover{border-color:var(--neon);opacity:1;}
 
-  /* Info panel */
-  .product-info { padding: 0 0 0 48px; }
-  .product-proto-tag {
-    display: inline-block; margin-bottom: 20px;
-    font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px;
-    text-transform: uppercase; padding: 5px 12px;
-    background: var(--neon); color: var(--black) !important;
-  }
-  .product-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(40px, 5vw, 72px); line-height: 0.95;
-    color: var(--white) !important; margin-bottom: 24px;
-  }
-  .product-price-row { display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px; }
-  .product-price { font-family: 'Space Mono', monospace; font-size: 28px; font-weight: 700; color: var(--neon) !important; }
-  .product-compare { font-family: 'Space Mono', monospace; font-size: 16px; color: var(--dim) !important; text-decoration: line-through; }
-  .product-save { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--neon) !important; background: rgba(200,255,0,0.12); padding: 3px 8px; }
-  .product-trust { display: flex; gap: 20px; margin-bottom: 28px; flex-wrap: wrap; }
-  .trust-item { display: flex; align-items: center; gap: 6px; }
-  .trust-icon { color: var(--neon) !important; font-size: 12px; }
-  .trust-text { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--dim) !important; }
+  /* Info */
+  .product-info{padding:0 0 0 48px;}
+  .product-proto-tag{display:inline-block;margin-bottom:20px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:5px 12px;background:var(--neon);color:var(--black) !important;text-decoration:none !important;}
+  .product-name{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,5vw,72px);line-height:0.95;color:var(--white) !important;margin-bottom:24px;}
+  .product-price-row{display:flex;align-items:baseline;gap:12px;margin-bottom:8px;}
+  .product-price{font-family:'Space Mono',monospace;font-size:28px;font-weight:700;color:var(--neon) !important;}
+  .product-compare{font-family:'Space Mono',monospace;font-size:16px;color:var(--dim) !important;text-decoration:line-through;}
+  .product-save{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--neon) !important;background:rgba(200,255,0,0.12);padding:3px 8px;}
+  .product-trust{display:flex;gap:20px;margin:20px 0 28px;flex-wrap:wrap;}
+  .trust-item{display:flex;align-items:center;gap:6px;}
+  .trust-icon{color:var(--neon) !important;font-size:12px;}
+  .trust-text{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--dim) !important;}
 
   /* Variants */
-  .variant-section { margin-bottom: 24px; }
-  .variant-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim) !important; margin-bottom: 10px; display: block; }
-  .variant-label span { color: var(--white) !important; }
-  .variant-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-  .variant-btn {
-    font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px;
-    text-transform: uppercase; padding: 9px 16px;
-    background: var(--gray); color: var(--dim) !important;
-    border: 1px solid var(--border); cursor: pointer; transition: all 0.15s;
-  }
-  .variant-btn:hover { border-color: var(--neon); color: var(--white) !important; }
-  .variant-btn.active { background: var(--neon); color: var(--black) !important; border-color: var(--neon); }
-  .variant-btn.unavailable { opacity: 0.3; cursor: not-allowed; text-decoration: line-through; }
+  .variant-section{margin-bottom:24px;}
+  .variant-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim) !important;margin-bottom:10px;display:block;}
+  .variant-label span{color:var(--white) !important;}
+  .variant-btns{display:flex;gap:8px;flex-wrap:wrap;}
+  .variant-btn{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:9px 16px;background:var(--gray);color:var(--dim) !important;border:1px solid var(--border);cursor:pointer;transition:all 0.15s;}
+  .variant-btn:hover{border-color:var(--neon);color:var(--white) !important;}
+  .variant-btn.active{background:var(--neon);color:var(--black) !important;border-color:var(--neon);}
 
   /* ATC */
-  .atc-section { margin-bottom: 24px; }
-  .qty-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
-  .qty-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim) !important; }
-  .qty-ctrl { display: flex; align-items: center; border: 1px solid var(--border); }
-  .qty-ctrl button { background: var(--gray); border: none; color: var(--white) !important; width: 36px; height: 36px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
-  .qty-ctrl button:hover { background: var(--mid); }
-  .qty-ctrl input { background: var(--black); border: none; border-left: 1px solid var(--border); border-right: 1px solid var(--border); color: var(--white) !important; font-family: 'Space Mono', monospace; font-size: 13px; width: 44px; height: 36px; text-align: center; outline: none; }
-  .atc-btn {
-    display: block; width: 100%; padding: 16px;
-    background: var(--neon); color: var(--black) !important;
-    font-family: 'Space Mono', monospace; font-size: 12px;
-    font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
-    border: none; cursor: pointer; transition: opacity 0.2s;
-  }
-  .atc-btn:hover { opacity: 0.88; }
-  .atc-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .atc-success { display: none; padding: 14px; background: rgba(200,255,0,0.1); border: 1px solid var(--neon); font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--neon) !important; text-align: center; margin-top: 8px; }
-  .atc-success.show { display: block; }
+  .atc-section{margin-bottom:24px;}
+  .qty-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+  .qty-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim) !important;}
+  .qty-ctrl{display:flex;align-items:center;border:1px solid var(--border);}
+  .qty-ctrl button{background:var(--gray);border:none;color:var(--white) !important;width:36px;height:36px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+  .qty-ctrl button:hover{background:var(--mid);}
+  .qty-ctrl input{background:var(--black);border:none;border-left:1px solid var(--border);border-right:1px solid var(--border);color:var(--white) !important;font-family:'Space Mono',monospace;font-size:13px;width:44px;height:36px;text-align:center;outline:none;}
+  .atc-btn{display:block;width:100%;padding:16px;background:var(--neon);color:var(--black) !important;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;border:none;cursor:pointer;transition:opacity 0.2s;}
+  .atc-btn:hover{opacity:0.88;}
+  .atc-btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .atc-success{display:none;padding:14px;background:rgba(200,255,0,0.1);border:1px solid var(--neon);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--neon) !important;text-align:center;margin-top:12px;}
+  .atc-success.show{display:block;}
 
-  /* Description tabs */
-  .product-tabs { margin-top: 40px; border-top: 1px solid var(--border); }
-  .tab-btns { display: flex; border-bottom: 1px solid var(--border); }
-  .tab-btn { padding: 14px 20px; font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim) !important; background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: color 0.2s, border-color 0.2s; white-space: nowrap; }
-  .tab-btn.active, .tab-btn:hover { color: var(--neon) !important; border-bottom-color: var(--neon); }
-  .tab-panel { display: none; padding: 28px 0; }
-  .tab-panel.active { display: block; }
-  .tab-panel p { font-size: 14px; color: var(--dim) !important; line-height: 1.8; margin-bottom: 16px; }
-  .tab-panel ul { padding-left: 0; list-style: none; }
-  .tab-panel ul li { font-size: 14px; color: var(--dim) !important; line-height: 1.8; padding: 6px 0; border-bottom: 1px solid var(--border); display: flex; gap: 12px; }
-  .tab-panel ul li::before { content: '//'; color: var(--neon) !important; font-family: 'Space Mono', monospace; font-size: 11px; flex-shrink: 0; margin-top: 3px; }
+  /* Tabs */
+  .product-tabs{margin-top:40px;border-top:1px solid var(--border);}
+  .tab-btns{display:flex;border-bottom:1px solid var(--border);}
+  .tab-btn{background:none;border:none;border-bottom:2px solid transparent;padding:16px 20px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim) !important;cursor:pointer;transition:all 0.2s;}
+  .tab-btn:hover{color:var(--white) !important;}
+  .tab-btn.active{color:var(--neon) !important;border-bottom-color:var(--neon);}
+  .tab-panel{display:none;padding:24px 0;}
+  .tab-panel.active{display:block;}
+  .tab-panel p,.tab-panel li{font-size:14px;color:var(--dim) !important;line-height:1.8;}
+  .tab-panel ul{padding-left:20px;}
+  .tab-panel li{margin-bottom:8px;}
 
-  /* Related products */
-  .related-section { padding: 64px 48px; border-top: 1px solid var(--border); }
-  .related-heading { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--dim) !important; margin-bottom: 32px; }
-  .related-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 2px; }
-  .related-card { background: var(--gray); padding: 24px; display: flex; flex-direction: column; transition: background 0.2s; }
-  .related-card:hover { background: var(--mid); }
-  .related-img { width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: 16px; display: block; }
-  .related-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--white) !important; margin-bottom: 8px; flex: 1; }
-  .related-price { font-family: 'Space Mono', monospace; font-size: 15px; font-weight: 700; color: var(--neon) !important; margin-bottom: 14px; }
-  .related-link { display: block; padding: 9px; background: transparent; border: 1px solid #2a2a2a; font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; text-decoration: none !important; text-align: center; color: var(--white) !important; transition: background 0.2s, border-color 0.2s, color 0.2s; }
-  .related-link:hover { background: var(--neon); border-color: var(--neon); color: var(--black) !important; }
+  /* RELATED */
+  .related-section{padding:72px 48px;border-top:1px solid var(--border);}
+  .related-heading{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--neon) !important;margin-bottom:8px;display:block;}
+  .related-title{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--white) !important;margin-bottom:32px;}
+  .related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:2px;}
+  .related-card{background:var(--gray);padding:24px;transition:background 0.2s;text-decoration:none !important;}
+  .related-card:hover{background:var(--mid);}
+  .related-card-img{width:100%;aspect-ratio:1;background:var(--mid);margin-bottom:16px;overflow:hidden;}
+  .related-card-img img{width:100%;height:100%;object-fit:cover;}
+  .related-card-name{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--white) !important;line-height:1.1;margin-bottom:8px;}
+  .related-card-price{font-family:'Space Mono',monospace;font-size:14px;color:var(--neon) !important;margin-bottom:12px;}
+  .related-link{display:block;width:100%;padding:10px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;text-align:center;color:var(--dim) !important;border:1px solid var(--border);transition:all 0.2s;text-decoration:none !important;}
+  .related-link:hover{background:var(--neon);border-color:var(--neon);color:var(--black) !important;}
 
-  /* FOOTER */
-  .om-footer { padding: 40px 48px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; }
-  .footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 4px; color: var(--neon) !important; text-decoration: none !important; }
-  .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
-  .footer-links a { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--dim) !important; text-decoration: none !important; transition: color 0.2s; }
-  .footer-links a:hover { color: var(--neon) !important; }
-  .footer-copy { font-size: 11px; color: var(--dim) !important; }
+  /* JUDGE.ME DARK THEME OVERRIDES */
+  .jdgm-rev-widg{background:var(--black) !important;color:var(--white) !important;border:none !important;font-family:'Inter',sans-serif !important;}
+  .jdgm-rev-widg *{color:var(--dim) !important;}
+  .jdgm-rev-widg .jdgm-rev__title,.jdgm-rev-widg .jdgm-rev__author{color:var(--white) !important;font-family:'Space Mono',monospace !important;}
+  .jdgm-rev-widg .jdgm-rev__body{color:var(--dim) !important;}
+  .jdgm-rev-widg .jdgm-star{color:var(--neon) !important;}
+  .jdgm-rev-widg .jdgm-rev{border-bottom:1px solid var(--border) !important;padding:24px 0 !important;}
+  .jdgm-rev-widg .jdgm-form{background:var(--gray) !important;border:1px solid var(--border) !important;padding:24px !important;}
+  .jdgm-rev-widg .jdgm-form input,.jdgm-rev-widg .jdgm-form textarea{background:var(--black) !important;color:var(--white) !important;border:1px solid var(--border) !important;font-family:'Inter',sans-serif !important;}
+  .jdgm-rev-widg .jdgm-form__btn{background:var(--neon) !important;color:var(--black) !important;font-family:'Space Mono',monospace !important;letter-spacing:2px !important;text-transform:uppercase !important;border:none !important;}
+  .jdgm-rev-widg .jdgm-paginate a{color:var(--neon) !important;border:1px solid var(--border) !important;background:var(--gray) !important;}
+  .jdgm-prev-badge .jdgm-star{color:var(--neon) !important;}
+  .jdgm-prev-badge__text{color:var(--dim) !important;font-family:'Space Mono',monospace !important;font-size:10px !important;}
 
-  /* MOBILE */
-  @media (max-width: 768px) {
-    .om-nav { padding: 0 16px; }
-    .om-logo { font-size: 17px; letter-spacing: 3px; }
-    .om-nav-center, .om-back-link { display: none; }
-    .om-hamburger { display: flex; }
-    .om-breadcrumb { padding: 80px 20px 0; }
-    .product-wrap { grid-template-columns: 1fr; padding: 24px 20px 0; gap: 0; }
-    .product-images { position: static; margin-bottom: 32px; }
-    .product-info { padding: 0; }
-    .related-section { padding: 48px 20px; }
-    .om-footer { flex-direction: column; padding: 28px 20px; text-align: center; }
-    .footer-links { justify-content: center; }
-    .om-drawer { width: 100vw; }
+  @media(max-width:768px){
+    .om-breadcrumb{padding:80px 20px 0;}
+    .product-wrap{grid-template-columns:1fr;padding:24px 20px 0;gap:0;}
+    .product-images{position:static;margin-bottom:32px;}
+    .product-info{padding:0;}
+    .related-section{padding:48px 20px;}
   }
 </style>
-
-<!-- OVERLAY -->
-<div class="om-overlay" id="omOverlay" onclick="omCloseCart()"></div>
-
-<!-- CART DRAWER -->
-<div class="om-drawer" id="omDrawer">
-  <div class="om-drawer-head">
-    <h2>YOUR <span>PROTOCOL</span></h2>
-    <button class="om-drawer-x" onclick="omCloseCart()">&times;</button>
-  </div>
-  <div class="om-drawer-body" id="omDrawerBody">
-    {% if cart.item_count == 0 %}
-      <div class="om-empty-cart">
-        <p>Your protocol is empty.</p>
-        <a href="{{ routes.root_url }}">Browse protocols</a>
-      </div>
-    {% else %}
-      {% for item in cart.items %}
-        <div class="om-cart-item">
-          {% if item.image %}
-            <img src="{{ item.image | image_url: width: 128 }}" alt="{{ item.title | escape }}" width="64" height="64">
-          {% endif %}
-          <div class="om-item-info">
-            <p class="om-item-name">{{ item.product.title }}</p>
-            <p class="om-item-price">{{ item.final_price | money }}</p>
-            <div class="om-qty-row">
-              <button class="om-qty-btn" onclick="omUpdateQty('{{ item.key }}', {{ item.quantity | minus: 1 }})">&#8722;</button>
-              <span class="om-qty-val">{{ item.quantity }}</span>
-              <button class="om-qty-btn" onclick="omUpdateQty('{{ item.key }}', {{ item.quantity | plus: 1 }})">+</button>
-            </div>
-            <button class="om-item-remove" onclick="omUpdateQty('{{ item.key }}', 0)">Remove</button>
-          </div>
-        </div>
-      {% endfor %}
-    {% endif %}
-  </div>
-  <div class="om-drawer-foot">
-    <div class="om-subtotal-row">
-      <span class="om-subtotal-label">Subtotal</span>
-      <span class="om-subtotal-price" id="omTotal">{{ cart.total_price | money }}</span>
-    </div>
-    <a href="/checkout" class="om-checkout">Checkout &rarr;</a>
-  </div>
-</div>
-
-<!-- NAV -->
-<nav class="om-nav">
-  <a href="{{ routes.root_url }}" class="om-logo">OPTIMA<span class="logo-rest">XXING</span></a>
-  <div class="om-nav-center">
-    <button class="om-protocols-btn" id="omProtoBtn" onclick="omToggleDrop()">
-      Protocols <span class="om-chevron">&#9660;</span>
-    </button>
-    <div class="om-dropdown" id="omDrop">
-      <a href="{{ routes.collections_url }}/facemaxx-protocol"><span class="pnum">01</span>Facemaxx</a>
-      <a href="{{ routes.collections_url }}/sleepmaxx-protocol"><span class="pnum">02</span>Sleepmaxx</a>
-      <a href="{{ routes.collections_url }}/gymmaxx-protocol"><span class="pnum">03</span>Gymmaxx</a>
-      <a href="{{ routes.collections_url }}/framemaxx-protocol"><span class="pnum">04</span>Framemaxx</a>
-      <a href="{{ routes.collections_url }}/stylemaxx-protocol"><span class="pnum">05</span>Stylemaxx</a>
-      <a href="{{ routes.collections_url }}/mindmaxx-protocol"><span class="pnum">06</span>Mindmaxx</a>
-    </div>
-  </div>
-  <div class="om-nav-right">
-    {% if proto_url != '' %}
-      <a href="{{ proto_url }}" class="om-back-link">&larr; {{ proto_tag }}</a>
-    {% else %}
-      <a href="{{ routes.root_url }}" class="om-back-link">&larr; Home</a>
-    {% endif %}
-    <button class="om-cart-btn" onclick="omOpenCart()" aria-label="Open cart">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/>
-        <path d="M16 10a4 4 0 01-8 0"/>
-      </svg>
-      <span class="om-badge{% if cart_count == 0 %} hidden{% endif %}" id="omBadge">{{ cart_count }}</span>
-    </button>
-    <button class="om-hamburger" id="omBurger" onclick="omToggleMobile()" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-</nav>
-
-<!-- MOBILE MENU -->
-<div class="om-mobile-menu" id="omMobileMenu">
-  <a href="{{ routes.collections_url }}/facemaxx-protocol"><span class="pnum">01</span>Facemaxx</a>
-  <a href="{{ routes.collections_url }}/sleepmaxx-protocol"><span class="pnum">02</span>Sleepmaxx</a>
-  <a href="{{ routes.collections_url }}/gymmaxx-protocol"><span class="pnum">03</span>Gymmaxx</a>
-  <a href="{{ routes.collections_url }}/framemaxx-protocol"><span class="pnum">04</span>Framemaxx</a>
-  <a href="{{ routes.collections_url }}/stylemaxx-protocol"><span class="pnum">05</span>Stylemaxx</a>
-  <a href="{{ routes.collections_url }}/mindmaxx-protocol"><span class="pnum">06</span>Mindmaxx</a>
-</div>
 
 <!-- BREADCRUMB -->
 <div class="om-breadcrumb">
   <a href="{{ routes.root_url }}" class="breadcrumb-link">Home</a>
   <span class="breadcrumb-sep">/</span>
-  {% if proto_tag != '' %}
-    <a href="{{ proto_url }}" class="breadcrumb-link">{{ proto_tag }}</a>
+  {% if proto_url != '' %}
+    <a href="{{ proto_url }}" class="breadcrumb-link">{{ proto_tag }} Protocol</a>
     <span class="breadcrumb-sep">/</span>
   {% endif %}
-  <span class="breadcrumb-current">{{ prod.title | truncate: 40 }}</span>
+  <span class="breadcrumb-current">{{ prod.title }}</span>
 </div>
 
 <!-- PRODUCT -->
 <div class="product-wrap">
 
-  <!-- LEFT: Images -->
+  <!-- Images -->
   <div class="product-images">
-    {% if prod.images.size > 0 %}
-      <div class="main-img-wrap">
-        <img id="mainImg"
-          src="{{ prod.images.first | image_url: width: 800 }}"
-          alt="{{ prod.images.first.alt | escape }}"
-          width="800" height="800">
-      </div>
-      {% if prod.images.size > 1 %}
-        <div class="img-thumbnails">
-          {% for img in prod.images limit: 8 %}
-            <img class="img-thumb{% if forloop.first %} active{% endif %}"
-              src="{{ img | image_url: width: 160 }}"
-              alt="{{ img.alt | escape }}"
-              width="80" height="80"
-              onclick="omSwapImg(this, '{{ img | image_url: width: 800 }}')">
-          {% endfor %}
+    <div class="main-img-wrap">
+      {% if prod.featured_image %}
+        <img id="mainImg" src="{{ prod.featured_image | image_url: width: 800 }}" alt="{{ prod.featured_image.alt | escape }}">
+      {% else %}
+        <div style="width:100%;aspect-ratio:1;background:var(--mid);display:flex;align-items:center;justify-content:center;">
+          <span style="font-family:'Space Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase;">Product Image</span>
         </div>
       {% endif %}
-    {% else %}
-      <div class="main-img-placeholder"><span>Image pending</span></div>
+    </div>
+    {% if prod.images.size > 1 %}
+      <div class="img-thumbnails">
+        {% for image in prod.images %}
+          <img class="img-thumb{% if forloop.first %} active{% endif %}"
+            src="{{ image | image_url: width: 160 }}"
+            alt="{{ image.alt | escape }}"
+            onclick="omSwapImg(this, '{{ image | image_url: width: 800 }}')"
+            width="80" height="80" loading="lazy">
+        {% endfor %}
+      </div>
     {% endif %}
   </div>
 
-  <!-- RIGHT: Info -->
+  <!-- Info -->
   <div class="product-info">
     {% if proto_tag != '' %}
-      <span class="product-proto-tag">{{ proto_tag }} Protocol</span>
+      <a href="{{ proto_url }}" class="product-proto-tag">{{ proto_tag }} Protocol</a>
     {% endif %}
-
-    <h1 class="product-name">{{ prod.title }}</h1>
+    <h1 class="product-name">{{ prod.title | upcase }}</h1>
 
     <div class="product-price-row">
       <span class="product-price" id="prodPrice">{{ first_variant.price | money }}</span>
-      {% if first_variant.compare_at_price > first_variant.price %}
-        <span class="product-compare" id="prodCompare">{{ first_variant.compare_at_price | money }}</span>
-        {% assign savings = first_variant.compare_at_price | minus: first_variant.price | times: 100 | divided_by: first_variant.compare_at_price %}
+      {% if prod.compare_at_price > prod.price %}
+        <span class="product-compare">{{ prod.compare_at_price | money }}</span>
         <span class="product-save">{{ savings }}% off</span>
       {% endif %}
     </div>
@@ -416,10 +202,7 @@
           <span class="variant-label">{{ option.name }}: <span id="optVal{{ forloop.index }}">{{ option.selected_value }}</span></span>
           <div class="variant-btns">
             {% for value in option.values %}
-              <button
-                class="variant-btn{% if option.selected_value == value %} active{% endif %}"
-                onclick="omSelectOption({{ forloop.index }}, '{{ value | escape }}', this)"
-              >{{ value }}</button>
+              <button class="variant-btn{% if option.selected_value == value %} active{% endif %}" onclick="omSelectOption({{ forloop.index }},'{{ value | escape }}',this)">{{ value }}</button>
             {% endfor %}
           </div>
         </div>
@@ -436,24 +219,20 @@
           <button type="button" onclick="omQtyChange(1)">+</button>
         </div>
       </div>
-      <button class="atc-btn" id="atcBtn" onclick="omAddToCart()">
-        Add To Protocol &rarr;
-      </button>
+      <button class="atc-btn" id="atcBtn" onclick="omAddToCart()">Add To Protocol &rarr;</button>
       <div class="atc-success" id="atcSuccess">&#10003; Added to your protocol</div>
     </div>
 
     <!-- Tabs -->
     <div class="product-tabs">
       <div class="tab-btns">
-        <button class="tab-btn active" onclick="omShowTab('desc', this)">Description</button>
-        <button class="tab-btn"        onclick="omShowTab('protocol', this)">How To Use</button>
-        <button class="tab-btn"        onclick="omShowTab('shipping', this)">Shipping</button>
+        <button class="tab-btn active" onclick="omShowTab('desc',this)">Description</button>
+        <button class="tab-btn" onclick="omShowTab('protocol',this)">How To Use</button>
+        <button class="tab-btn" onclick="omShowTab('shipping',this)">Shipping</button>
       </div>
       <div class="tab-panel active" id="desc">
         {% if prod.description != blank %}
-          <div style="font-size:14px;color:var(--dim);line-height:1.8;">
-            {{ prod.description }}
-          </div>
+          <div style="font-size:14px;color:var(--dim);line-height:1.8;">{{ prod.description }}</div>
         {% else %}
           <p>Full product details coming soon.</p>
         {% endif %}
@@ -461,18 +240,15 @@
       <div class="tab-panel" id="protocol">
         <ul>
           <li>Use 3-5x per week for best results. Consistency mogs everything.</li>
-          <li>Start with 10-minute sessions. Build to 20 minutes over the first week.</li>
-          <li>Track before and after with photos under the same lighting conditions.</li>
-          <li>Stack with complementary protocol tools for compounding results.</li>
+          <li>Start with 10-minute sessions. Build to 15–20 minutes over 2 weeks.</li>
+          <li>Clean face first. Apply serum before for enhanced absorption.</li>
+          <li>Evening sessions preferred — red light does not disrupt sleep.</li>
+          <li>Visible results typically appear at week 2-3 with consistent use.</li>
         </ul>
       </div>
       <div class="tab-panel" id="shipping">
-        <ul>
-          <li>Free tracked shipping on all orders.</li>
-          <li>Estimated delivery: 7-14 business days.</li>
-          <li>30-day protocol guarantee — if you don't see results, return it.</li>
-          <li>Order confirmation and tracking sent within 24 hours of purchase.</li>
-        </ul>
+        <p>Free tracked shipping on all orders. Ships within 1-3 business days. Typical delivery 7-14 business days depending on location.</p>
+        <p style="margin-top:16px">30-day protocol guarantee. If the tool does not deliver results within 30 days of consistent use, return it for a full refund. No conditions. No questions.</p>
       </div>
     </div>
   </div>
@@ -480,164 +256,111 @@
 
 <!-- RELATED PRODUCTS -->
 {% if prod.collections.size > 0 %}
-  {% assign rel_col = prod.collections.first %}
-  {% assign related = rel_col.products | where: 'id', prod.id | map: 'id' %}
-  {% if rel_col.products.size > 1 %}
-    <div class="related-section">
-      <p class="related-heading">More From {{ rel_col.title }}</p>
+  {% assign related_col = prod.collections.first %}
+  {% if related_col.products.size > 1 %}
+    <section class="related-section">
+      <span class="related-heading">// Same Protocol</span>
+      <h2 class="related-title">COMPLETE YOUR {{ proto_tag | upcase | default: 'PROTOCOL' }}</h2>
       <div class="related-grid">
-        {% for rp in rel_col.products limit: 4 %}
-          {% unless rp.id == prod.id %}
-            <div class="related-card">
-              {% if rp.featured_image %}
-                <img class="related-img"
-                  src="{{ rp.featured_image | image_url: width: 400 }}"
-                  alt="{{ rp.featured_image.alt | escape }}"
-                  width="400" height="400" loading="lazy">
-              {% endif %}
-              <h3 class="related-name">{{ rp.title }}</h3>
-              <p class="related-price">{{ rp.price | money }}</p>
-              <a href="{{ rp.url }}" class="related-link">View Product</a>
-            </div>
-          {% endunless %}
+        {% for rp in related_col.products limit: 4 %}
+          {% if rp.handle != prod.handle %}
+            <a href="{{ rp.url }}" class="related-card">
+              <div class="related-card-img">
+                {% if rp.featured_image %}
+                  <img src="{{ rp.featured_image | image_url: width: 400 }}" alt="{{ rp.featured_image.alt | escape }}" loading="lazy">
+                {% endif %}
+              </div>
+              <div class="related-card-name">{{ rp.title }}</div>
+              <div class="related-card-price">{{ rp.price | money }}</div>
+              <span class="related-link">View Product</span>
+            </a>
+          {% endif %}
         {% endfor %}
       </div>
-    </div>
+    </section>
   {% endif %}
 {% endif %}
-
-<!-- FOOTER -->
-<footer class="om-footer">
-  <a href="{{ routes.root_url }}" class="footer-brand">OPTIMAXXING</a>
-  <div class="footer-links">
-    <a href="{{ routes.root_url }}pages/returns">Returns</a>
-    <a href="{{ routes.root_url }}pages/shipping">Shipping</a>
-    <a href="{{ routes.root_url }}pages/faq">FAQ</a>
-    <a href="{{ routes.root_url }}pages/contact">Contact</a>
-  </div>
-  <p class="footer-copy">30-Day Protocol Guarantee &nbsp;&middot;&nbsp; &copy; {{ 'now' | date: '%Y' }} Optimaxxing</p>
-</footer>
 
 <script>
   var currentVariantId = {{ first_variant.id }};
   var productVariants = {{ prod.variants | json }};
 
-  function omToggleDrop() {
-    document.getElementById('omProtoBtn').classList.toggle('open');
-    document.getElementById('omDrop').classList.toggle('open');
-  }
-  document.addEventListener('click', function(e) {
-    if (!e.target.closest('.om-nav-center')) {
-      document.getElementById('omProtoBtn').classList.remove('open');
-      document.getElementById('omDrop').classList.remove('open');
-    }
-  });
-  function omToggleMobile() {
-    document.getElementById('omBurger').classList.toggle('open');
-    document.getElementById('omMobileMenu').classList.toggle('open');
-  }
-  function omOpenCart() {
-    document.getElementById('omDrawer').classList.add('open');
-    document.getElementById('omOverlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  function omCloseCart() {
-    document.getElementById('omDrawer').classList.remove('open');
-    document.getElementById('omOverlay').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  function omSwapImg(thumb, src) {
-    document.getElementById('mainImg').src = src;
-    document.querySelectorAll('.img-thumb').forEach(function(t) { t.classList.remove('active'); });
+  function omSwapImg(thumb, src){
+    document.getElementById('mainImg').src=src;
+    document.querySelectorAll('.img-thumb').forEach(function(t){t.classList.remove('active')});
     thumb.classList.add('active');
   }
 
-  function omQtyChange(delta) {
-    var input = document.getElementById('prodQty');
-    var val = parseInt(input.value) + delta;
-    input.value = Math.max(1, Math.min(99, val));
+  function omQtyChange(delta){
+    var input=document.getElementById('prodQty');
+    var val=parseInt(input.value)+delta;
+    input.value=Math.max(1,Math.min(99,val));
   }
 
-  function omSelectOption(optionIndex, value, btn) {
-    // Update label
-    var label = document.getElementById('optVal' + optionIndex);
-    if (label) label.textContent = value;
-    // Toggle active state within this option group
-    btn.parentElement.querySelectorAll('.variant-btn').forEach(function(b) { b.classList.remove('active'); });
+  function omSelectOption(optionIndex, value, btn){
+    var label=document.getElementById('optVal'+optionIndex);
+    if(label) label.textContent=value;
+    btn.parentElement.querySelectorAll('.variant-btn').forEach(function(b){b.classList.remove('active')});
     btn.classList.add('active');
-    // Find matching variant
-    var selectedOptions = [];
-    document.querySelectorAll('.variant-section').forEach(function(section) {
-      var active = section.querySelector('.variant-btn.active');
-      if (active) selectedOptions.push(active.textContent.trim());
+    var selectedOptions=[];
+    document.querySelectorAll('.variant-section').forEach(function(section){
+      var active=section.querySelector('.variant-btn.active');
+      if(active) selectedOptions.push(active.textContent.trim());
     });
-    var match = productVariants.find(function(v) {
-      return v.options.every(function(o, i) { return o === selectedOptions[i]; });
+    var match=productVariants.find(function(v){
+      return v.options.every(function(o,i){return o===selectedOptions[i]});
     });
-    if (match) {
-      currentVariantId = match.id;
-      document.getElementById('prodPrice').textContent =
-        '$' + (match.price / 100).toFixed(2);
-      document.getElementById('atcBtn').disabled = !match.available;
+    if(match){
+      currentVariantId=match.id;
+      document.getElementById('prodPrice').textContent='$'+(match.price/100).toFixed(2);
+      document.getElementById('atcBtn').disabled=!match.available;
     }
   }
 
-  function omAddToCart() {
-    var qty = parseInt(document.getElementById('prodQty').value);
-    var btn = document.getElementById('atcBtn');
-    btn.disabled = true;
-    btn.textContent = 'Adding...';
-    fetch('/cart/add.js', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: currentVariantId, quantity: qty })
-    }).then(r => r.json()).then(function() {
+  function omAddToCart(){
+    var qty=parseInt(document.getElementById('prodQty').value);
+    var btn=document.getElementById('atcBtn');
+    btn.disabled=true;btn.textContent='Adding...';
+    fetch('/cart/add.js',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({id:currentVariantId,quantity:qty})
+    }).then(function(r){return r.json()}).then(function(){
       return fetch('/cart.js');
-    }).then(r => r.json()).then(function(cart) {
-      var b = document.getElementById('omBadge');
-      b.textContent = cart.item_count;
-      b.classList.toggle('hidden', cart.item_count === 0);
-      btn.textContent = 'Add To Protocol \u2192';
-      btn.disabled = false;
-      var success = document.getElementById('atcSuccess');
+    }).then(function(r){return r.json()}).then(function(cart){
+      var b=document.getElementById('omBadge');
+      b.textContent=cart.item_count;
+      b.classList.toggle('hidden',cart.item_count===0);
+      btn.textContent='Add To Protocol \u2192';btn.disabled=false;
+      var success=document.getElementById('atcSuccess');
       success.classList.add('show');
-      setTimeout(function() { success.classList.remove('show'); }, 3000);
-      // Refresh drawer body
-      fetch(window.location.pathname + '?section_id=optimaxxing-product').then(r => r.text()).then(function(html) {
-        var doc = new DOMParser().parseFromString(html, 'text/html');
-        var nb = doc.getElementById('omDrawerBody');
-        if (nb) document.getElementById('omDrawerBody').innerHTML = nb.innerHTML;
+      setTimeout(function(){success.classList.remove('show')},3000);
+      // Refresh drawer
+      fetch(window.location.pathname+'?sections=optimaxxing-header').then(function(r){return r.json()}).then(function(data){
+        var html=data['optimaxxing-header'];
+        if(html){
+          var doc=new DOMParser().parseFromString(html,'text/html');
+          var nb=doc.getElementById('omDrawerBody');
+          if(nb) document.getElementById('omDrawerBody').innerHTML=nb.innerHTML;
+        }
       });
-      omOpenCart();
-    }).catch(function() {
-      btn.textContent = 'Add To Protocol \u2192';
-      btn.disabled = false;
+      if(typeof omOpenCart==='function') omOpenCart();
+    }).catch(function(){
+      btn.textContent='Add To Protocol \u2192';btn.disabled=false;
     });
   }
 
-  function omUpdateQty(key, qty) {
-    fetch('/cart/change.js', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: key, quantity: qty })
-    }).then(r => r.json()).then(function(cart) {
-      var b = document.getElementById('omBadge');
-      b.textContent = cart.item_count;
-      b.classList.toggle('hidden', cart.item_count === 0);
-      document.getElementById('omTotal').textContent =
-        (cart.total_price / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-      fetch(window.location.pathname + '?section_id=optimaxxing-product').then(r => r.text()).then(function(html) {
-        var doc = new DOMParser().parseFromString(html, 'text/html');
-        var nb = doc.getElementById('omDrawerBody');
-        if (nb) document.getElementById('omDrawerBody').innerHTML = nb.innerHTML;
-      });
-    });
-  }
-
-  function omShowTab(id, btn) {
-    document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
-    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  function omShowTab(id,btn){
+    document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active')});
+    document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
     document.getElementById(id).classList.add('active');
     btn.classList.add('active');
   }
 </script>
+
+{% schema %}
+{
+  "name": "Optimaxxing Product",
+  "settings": [],
+  "presets": [{ "name": "Optimaxxing Product" }]
+}
+{% endschema %}

@@ -1,9 +1,7 @@
 {
   "sections": {
-    "main": {
-      "type": "optimaxxing-collection",
-      "settings": {}
-    }
+    "header": { "type": "optimaxxing-header", "settings": {} },
+    "main": { "type": "optimaxxing-collection", "settings": {} }
   },
-  "order": ["main"]
+  "order": ["header", "main"]
 }
