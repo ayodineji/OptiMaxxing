@@ -3,7 +3,7 @@
   File: optimaxxing-header.html
 
   Single source of truth for site navigation across all pages.
-  
+
   USAGE IN HTML TEST FILES:
   1. Set window.OM_PAGE before including this block:
      window.OM_PAGE = 'home' | 'bundles' | 'about' | 'collection' | 'product'
@@ -15,7 +15,23 @@
 -->
 
 <!-- == HEADER START == -->
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --black:  #050505;
+    --neon:   #C8FF00;
+    --white:  #F5F5F5;
+    --gray:   #141414;
+    --mid:    #202020;
+    --dim:    #888;
+    --border: #1e1e1e;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+  h1, h2, h3, h4, h5, h6 { color: var(--white); }
+  a { color: inherit; text-decoration: none; }
+
   /* NAV */
   .om-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;justify-content:space-between;align-items:center;padding:0 48px;height:64px;background:rgba(5,5,5,0.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);}
   .om-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:4px;color:var(--neon);text-decoration:none;flex-shrink:0;}
@@ -60,13 +76,33 @@
   .om-drawer-head h2{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);letter-spacing:2px;}
   .om-drawer-head h2 span{color:var(--neon);}
   .om-drawer-x{background:none;border:none;cursor:pointer;color:var(--dim);font-size:22px;padding:4px;}
-  .om-drawer-body{flex:1;overflow-y:auto;padding:16px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;}
-  .om-drawer-body p{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);}
-  .om-drawer-foot{padding:20px 24px;border-top:1px solid var(--border);}
-  .om-subtotal-row{display:flex;justify-content:space-between;margin-bottom:16px;}
+  .om-drawer-body{flex:1;overflow-y:auto;padding:16px 24px;}
+  .om-empty-cart{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;text-align:center;}
+  .om-empty-cart p{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);}
+  .om-empty-cart a{font-family:'Space Mono',monospace;font-size:10px;color:var(--neon);border-bottom:1px solid var(--neon);padding-bottom:2px;}
+  .om-cart-item{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--border);}
+  .om-cart-item img{width:64px;height:64px;object-fit:cover;flex-shrink:0;}
+  .om-item-info{flex:1;}
+  .om-item-name{font-family:'Bebas Neue',sans-serif;font-size:17px;color:var(--white);line-height:1.1;margin-bottom:4px;}
+  .om-item-price{font-family:'Space Mono',monospace;font-size:12px;color:var(--neon);margin-bottom:10px;}
+  .om-qty-row{display:flex;align-items:center;gap:10px;}
+  .om-qty-btn{background:var(--mid);border:none;color:var(--white);width:24px;height:24px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+  .om-qty-btn:hover{background:var(--neon);color:var(--black);}
+  .om-qty-val{font-family:'Space Mono',monospace;font-size:12px;color:var(--white);min-width:20px;text-align:center;}
+  .om-item-remove{background:none;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-top:8px;display:block;}
+  .om-drawer-foot{padding:20px 24px;border-top:1px solid var(--border);flex-shrink:0;}
+  .om-subtotal-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;}
   .om-subtotal-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);}
   .om-subtotal-price{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--neon);}
   .om-checkout{display:block;width:100%;padding:15px;text-align:center;background:var(--neon);color:var(--black);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;}
+
+  /* FOOTER (shared) */
+  .om-footer{padding:40px 48px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+  .footer-brand{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:4px;color:var(--neon);text-decoration:none;}
+  .footer-links{display:flex;gap:24px;flex-wrap:wrap;}
+  .footer-links a{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);text-decoration:none;transition:color 0.2s;}
+  .footer-links a:hover{color:var(--neon);}
+  .footer-copy{font-size:11px;color:var(--dim);}
 
   /* HEADER MOBILE */
   @media(max-width:768px){
@@ -76,6 +112,8 @@
     .om-nav-link{display:none;}
     .om-hamburger{display:flex;}
     .om-drawer{width:100vw;}
+    .om-footer{flex-direction:column;padding:28px 20px;text-align:center;}
+    .footer-links{justify-content:center;}
   }
 </style>
 
@@ -89,8 +127,10 @@
     <button class="om-drawer-x" onclick="omCloseCart()">&times;</button>
   </div>
   <div class="om-drawer-body" id="omDrawerBody">
-    <p>Your protocol is empty.</p>
-    <a href="optimaxxing-landing-test.html" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--neon);border-bottom:1px solid var(--neon);padding-bottom:2px;">Start building &rarr;</a>
+    <div class="om-empty-cart">
+      <p>Your protocol is empty.</p>
+      <a href="optimaxxing-landing-test.html">Start building &rarr;</a>
+    </div>
   </div>
   <div class="om-drawer-foot">
     <div class="om-subtotal-row">
@@ -116,9 +156,9 @@
       <a href="optimaxxing-landing-test.html#protocols" data-proto="stylemaxx"><span class="pnum">05</span>Stylemaxx</a>
       <a href="optimaxxing-landing-test.html#protocols" data-proto="mindmaxx"><span class="pnum">06</span>Mindmaxx</a>
       <a href="optimaxxing-landing-test.html#protocols" data-proto="cleanmaxx" style="color:#00CFFF"><span class="pnum" style="color:#00CFFF">07</span>Cleanmaxx</a>
-      <a href="optimaxxing-bundles.html" style="border-top:1px solid #1e1e1e;margin-top:4px;padding-top:18px"><span class="pnum">→</span>Bundles</a>
-      <a href="optimaxxing-quiz.html"><span class="pnum">→</span>Take The Quiz</a>
-      <a href="optimaxxing-about.html"><span class="pnum">→</span>Mission</a>
+      <a href="optimaxxing-bundles.html" style="border-top:1px solid #1e1e1e;margin-top:4px;padding-top:18px"><span class="pnum">&rarr;</span>Bundles</a>
+      <a href="optimaxxing-quiz.html"><span class="pnum">&rarr;</span>Take The Quiz</a>
+      <a href="optimaxxing-about.html"><span class="pnum">&rarr;</span>Mission</a>
     </div>
   </div>
   <div class="om-nav-right">
@@ -132,7 +172,7 @@
       <span class="om-badge hidden" id="omBadge">0</span>
     </button>
     <a href="optimaxxing-quiz.html" class="om-nav-cta">Start The Protocol</a>
-    <button class="om-hamburger" id="omBurger" onclick="omToggleMobile()">
+    <button class="om-hamburger" id="omBurger" onclick="omToggleMobile()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </div>
@@ -147,10 +187,22 @@
   <a href="optimaxxing-landing-test.html#protocols" data-proto="stylemaxx" onclick="omToggleMobile()"><span class="pnum">05</span>Stylemaxx</a>
   <a href="optimaxxing-landing-test.html#protocols" data-proto="mindmaxx" onclick="omToggleMobile()"><span class="pnum">06</span>Mindmaxx</a>
   <a href="optimaxxing-landing-test.html#protocols" data-proto="cleanmaxx" onclick="omToggleMobile()" style="color:#00CFFF"><span class="pnum" style="color:#00CFFF">07</span>Cleanmaxx</a>
-  <a href="optimaxxing-bundles.html" onclick="omToggleMobile()"><span class="pnum">→</span>Bundles</a>
-  <a href="optimaxxing-quiz.html" onclick="omToggleMobile()"><span class="pnum">→</span>Take The Quiz</a>
-  <a href="optimaxxing-about.html" onclick="omToggleMobile()"><span class="pnum">→</span>Mission</a>
+  <a href="optimaxxing-bundles.html" onclick="omToggleMobile()"><span class="pnum">&rarr;</span>Bundles</a>
+  <a href="optimaxxing-quiz.html" onclick="omToggleMobile()"><span class="pnum">&rarr;</span>Take The Quiz</a>
+  <a href="optimaxxing-about.html" onclick="omToggleMobile()"><span class="pnum">&rarr;</span>Mission</a>
 </div>
+
+<!-- FOOTER -->
+<footer class="om-footer">
+  <a href="optimaxxing-landing-test.html" class="footer-brand">OPTIMAXXING</a>
+  <div class="footer-links">
+    <a href="#">Returns</a>
+    <a href="#">Shipping</a>
+    <a href="#">FAQ</a>
+    <a href="#">Contact</a>
+  </div>
+  <p class="footer-copy">30-Day Protocol Guarantee &nbsp;&middot;&nbsp; &copy; 2026 Optimaxxing</p>
+</footer>
 
 <!-- HEADER JS -->
 <script>

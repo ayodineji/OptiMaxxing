@@ -72,7 +72,9 @@
   .product-card.hero-card .card-link{color:var(--black) !important;border-color:var(--black);}
   .product-card.hero-card .card-link:hover{background:var(--black);color:var(--neon) !important;}
   .card-badge{display:inline-block;align-self:flex-start;margin-bottom:18px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;padding:4px 10px;background:var(--mid);color:var(--neon) !important;text-transform:uppercase;}
-  .card-img{width:100%;aspect-ratio:1;object-fit:cover;margin-bottom:18px;background:var(--mid);}
+  .card-img-wrap{width:100%;aspect-ratio:1;overflow:hidden;margin-bottom:18px;background:var(--mid);}
+  .card-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+  .card-img{width:100%;aspect-ratio:1 !important;object-fit:cover !important;margin-bottom:18px;background:var(--mid);display:block;}
   .card-img-placeholder{width:100%;aspect-ratio:1;background:var(--mid);margin-bottom:18px;display:flex;align-items:center;justify-content:center;}
   .card-img-placeholder span{font-family:'Space Mono',monospace;font-size:9px;color:var(--dim) !important;letter-spacing:2px;text-transform:uppercase;}
   .card-name{font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1.1;color:var(--white) !important;margin-bottom:10px;flex:1;}

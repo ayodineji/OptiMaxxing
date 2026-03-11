@@ -45,7 +45,7 @@
   /* Images */
   .product-images{position:sticky;top:80px;align-self:start;}
   .main-img-wrap{position:relative;overflow:hidden;aspect-ratio:1;background:var(--gray);margin-bottom:2px;}
-  .main-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s ease;cursor:zoom-in;}
+  .main-img-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.4s ease;cursor:zoom-in;}
   .main-img-wrap:hover img{transform:scale(1.04);}
   .img-thumbnails{display:flex;gap:2px;flex-wrap:wrap;}
   .img-thumb{width:80px;height:80px;object-fit:cover;cursor:pointer;border:1px solid transparent;transition:border-color 0.15s;opacity:0.6;}
@@ -262,7 +262,7 @@
       <span class="related-heading">// Same Protocol</span>
       <h2 class="related-title">COMPLETE YOUR {{ proto_tag | upcase | default: 'PROTOCOL' }}</h2>
       <div class="related-grid">
-        {% for rp in related_col.products limit: 4 %}
+        {% for rp in related_col.products limit: 5 %}
           {% if rp.handle != prod.handle %}
             <a href="{{ rp.url }}" class="related-card">
               <div class="related-card-img">
@@ -312,8 +312,9 @@
     });
     if(match){
       currentVariantId=match.id;
-      document.getElementById('prodPrice').textContent='$'+(match.price/100).toFixed(2);
+      document.getElementById('prodPrice').textContent=Shopify.formatMoney ? Shopify.formatMoney(match.price, '{{shop.money_format}}') : ('$'+(match.price/100).toFixed(2));
       document.getElementById('atcBtn').disabled=!match.available;
+      document.getElementById('atcBtn').textContent=match.available ? 'Add To Protocol \u2192' : 'Sold Out';
     }
   }
 
@@ -344,8 +345,13 @@
         }
       });
       if(typeof omOpenCart==='function') omOpenCart();
-    }).catch(function(){
+    }).catch(function(err){
       btn.textContent='Add To Protocol \u2192';btn.disabled=false;
+      var success=document.getElementById('atcSuccess');
+      success.textContent='Error — please try again';
+      success.style.color='#ff4444';success.style.borderColor='#ff4444';success.style.background='rgba(255,68,68,0.08)';
+      success.classList.add('show');
+      setTimeout(function(){success.classList.remove('show');success.textContent='\u2713 Added to your protocol';success.style.color='';success.style.borderColor='';success.style.background='';},3000);
     });
   }
 

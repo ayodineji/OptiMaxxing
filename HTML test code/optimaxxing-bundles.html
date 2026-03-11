@@ -4,15 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OPTIMAXXING — Protocol Bundles</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --black:  #050505;
     --neon:   #C8FF00;
     --white:  #F5F5F5;
-    --gray:   #111111;
-    --mid:    #1a1a1a;
-    --dim:    #666;
+    --gray:   #141414;
+    --mid:    #202020;
+    --dim:    #888;
     --border: #1e1e1e;
   }
 
@@ -20,7 +20,7 @@
   html { scroll-behavior: smooth; }
   body {
     background: var(--black); color: var(--white);
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     overflow-x: hidden;
   }
   /* HERO */
@@ -39,29 +39,28 @@
   .hero-eyebrow {
     font-family: 'Space Mono', monospace; font-size: 10px;
     letter-spacing: 5px; text-transform: uppercase;
-    color: var(--neon); margin-bottom: 20px;
+    color: var(--neon); margin-bottom: 28px;
     opacity: 0; animation: fadeUp 0.6s 0.1s forwards;
   }
   .hero-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(72px, 11vw, 148px);
-    line-height: 0.88; letter-spacing: 2px;
-    color: var(--white); margin-bottom: 32px;
-    opacity: 0; animation: fadeUp 0.7s 0.25s forwards;
+    font-size: clamp(64px, 10vw, 130px);
+    line-height: 0.88;
+    color: var(--white); max-width: 900px; margin-bottom: 40px;
+    opacity: 0; animation: fadeUp 0.7s 0.2s forwards;
   }
-  .hero-title .line2 { color: var(--neon); display: block; }
+  .hero-title .line2 { color: var(--neon); }
   .hero-sub {
-    font-size: 16px; color: var(--dim); max-width: 520px;
-    line-height: 1.85; margin-bottom: 48px;
-    opacity: 0; animation: fadeUp 0.7s 0.4s forwards;
+    font-size: 17px; color: var(--dim); max-width: 580px;
+    line-height: 2; margin-bottom: 48px;
+    opacity: 0; animation: fadeUp 0.7s 0.35s forwards;
   }
   .hero-stats {
-    display: flex; gap: 56px; flex-wrap: wrap;
-    padding-top: 40px; border-top: 1px solid var(--border);
-    opacity: 0; animation: fadeUp 0.7s 0.55s forwards;
+    display: flex; gap: 48px; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp 0.6s 0.5s forwards;
   }
   .stat { display: flex; flex-direction: column; gap: 4px; }
-  .stat-n { font-family: 'Bebas Neue', sans-serif; font-size: 52px; color: var(--neon); line-height: 1; }
+  .stat-n { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: var(--white); line-height: 1; }
   .stat-l { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--dim); }
 
   /* SAVINGS TICKER */
@@ -425,10 +424,10 @@
   .om-drawer-head h2{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--white);letter-spacing:2px;}
   .om-drawer-head h2 span{color:var(--neon);}
   .om-drawer-x{background:none;border:none;cursor:pointer;color:var(--dim);font-size:22px;padding:4px;}
-  .om-drawer-body{flex:1;overflow-y:auto;padding:16px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;}
+  .om-drawer-body{flex:1;overflow-y:auto;padding:16px 24px;}
   .om-drawer-body p{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);}
-  .om-drawer-foot{padding:20px 24px;border-top:1px solid var(--border);}
-  .om-subtotal-row{display:flex;justify-content:space-between;margin-bottom:16px;}
+  .om-drawer-foot{padding:20px 24px;border-top:1px solid var(--border);flex-shrink:0;}
+  .om-subtotal-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:16px;}
   .om-subtotal-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);}
   .om-subtotal-price{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--neon);}
   .om-checkout{display:block;width:100%;padding:15px;text-align:center;background:var(--neon);color:var(--black);font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;}
@@ -454,8 +453,10 @@
     <button class="om-drawer-x" onclick="omCloseCart()">&times;</button>
   </div>
   <div class="om-drawer-body" id="omDrawerBody">
-    <p>Your protocol is empty.</p>
-    <a href="optimaxxing-landing-test.html" style="font-family:'Space Mono',monospace;font-size:10px;color:var(--neon);border-bottom:1px solid var(--neon);padding-bottom:2px;">Start building &rarr;</a>
+    <div class="om-empty-cart">
+      <p>Your protocol is empty.</p>
+      <a href="optimaxxing-landing-test.html">Start building &rarr;</a>
+    </div>
   </div>
   <div class="om-drawer-foot">
     <div class="om-subtotal-row">
@@ -497,7 +498,7 @@
       <span class="om-badge hidden" id="omBadge">0</span>
     </button>
     <a href="optimaxxing-quiz.html" class="om-nav-cta">Start The Protocol</a>
-    <button class="om-hamburger" id="omBurger" onclick="omToggleMobile()">
+    <button class="om-hamburger" id="omBurger" onclick="omToggleMobile()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </div>
@@ -563,10 +564,10 @@
   </h1>
   <p class="hero-sub">Individual tools optimize one variable. Protocol bundles optimize the system. Every bundle is built around a specific outcome — with the exact tools that compound into measurable results.</p>
   <div class="hero-stats">
-    <div class="stat"><span class="stat-n">8</span><span class="stat-l">Protocol Bundles</span></div>
+    <div class="stat"><span class="stat-n">9</span><span class="stat-l">Protocol Bundles</span></div>
     <div class="stat"><span class="stat-n">30%</span><span class="stat-l">Average Savings</span></div>
     <div class="stat"><span class="stat-n">30</span><span class="stat-l">Day Guarantee</span></div>
-    <div class="stat"><span class="stat-n">6</span><span class="stat-l">Protocols Covered</span></div>
+    <div class="stat"><span class="stat-n">7</span><span class="stat-l">Protocols Covered</span></div>
   </div>
 </section>
 
@@ -620,7 +621,7 @@
         <div class="card-num">// Bundle 01 &nbsp;·&nbsp; Full Stack</div>
         <div class="card-name">FULL OPTIMIZATION STARTER</div>
         <div class="card-tagline">One tool from every protocol. The complete system.</div>
-        <p class="card-why">This is the bundle for the man who understands that single-variable optimization has a ceiling. When you address face, sleep, training, frame, style, and mind simultaneously — the variables compound. The starter kit gives you one precision tool from each of the six protocols so you can run the full system from day one and identify which variables move the needle fastest for your specific situation.</p>
+        <div class="card-why">This is the bundle for the man who understands that single-variable optimization has a ceiling. When you address face, sleep, training, frame, style, and mind simultaneously — the variables compound. The starter kit gives you one precision tool from each of the six protocols so you can run the full system from day one and identify which variables move the needle fastest for your specific situation.</div>
         <div class="card-items">
           <div class="card-items-label">What's included</div>
           <div class="item-row"><div class="item-dot"></div><span class="item-name">LED Face Mask (Facemaxx)</span><span class="item-val">$85</span></div>
@@ -663,7 +664,7 @@
         <div class="card-num">// Bundle 02 &nbsp;·&nbsp; Facemaxx</div>
         <div class="card-name">FACEMAXX STARTER KIT</div>
         <div class="card-tagline">The entry protocol. Results in 2 weeks.</div>
-        <p class="card-why">Most guys spend months deciding which skincare tool to buy first. This kit removes the decision. Gua sha improves lymphatic drainage and facial definition. The ice roller reduces puffiness and tightens pores within minutes of use. Collagen eye patches target the highest-impact area for visible improvement. Three tools. One protocol. Daily habit in under 10 minutes.</p>
+        <div class="card-why">Most guys spend months deciding which skincare tool to buy first. This kit removes the decision. Gua sha improves lymphatic drainage and facial definition. The ice roller reduces puffiness and tightens pores within minutes of use. Collagen eye patches target the highest-impact area for visible improvement. Three tools. One protocol. Daily habit in under 10 minutes.</div>
         <div class="card-items">
           <div class="card-items-label">What's included</div>
           <div class="item-row"><div class="item-dot"></div><span class="item-name">Rose Quartz Gua Sha Stone</span><span class="item-val">$22</span></div>
@@ -703,7 +704,7 @@
         <div class="card-num">// Bundle 03 &nbsp;·&nbsp; Facemaxx Pro</div>
         <div class="card-name">FACEMAXX PRO KIT</div>
         <div class="card-tagline">Clinical-grade. The tools that actually change tissue.</div>
-        <p class="card-why">The LED mask delivers 630nm red light and 830nm near-infrared — the two wavelengths with the most clinical backing for collagen stimulation and cellular repair. The facial steamer creates the optimal skin environment before every session, opening pores and maximizing absorption. The derma roller compounds the effect by creating micro-channels that accelerate results. This is not skincare — this is facial engineering.</p>
+        <div class="card-why">The LED mask delivers 630nm red light and 830nm near-infrared — the two wavelengths with the most clinical backing for collagen stimulation and cellular repair. The facial steamer creates the optimal skin environment before every session, opening pores and maximizing absorption. The derma roller compounds the effect by creating micro-channels that accelerate results. This is not skincare — this is facial engineering.</div>
         <div class="card-items">
           <div class="card-items-label">What's included</div>
           <div class="item-row"><div class="item-dot"></div><span class="item-name">LED Face Mask (630nm + 830nm)</span><span class="item-val">$85</span></div>
@@ -743,7 +744,7 @@
         <div class="card-num">// Bundle 04 &nbsp;·&nbsp; Sleepmaxx</div>
         <div class="card-name">SLEEPMAXX NIGHT PROTOCOL</div>
         <div class="card-tagline">Optimize the 8 hours where everything compounds.</div>
-        <p class="card-why">Sleep is not recovery. Sleep is production — testosterone synthesis, cortisol clearance, skin cell regeneration, memory consolidation. If you are not controlling your sleep environment you are running a production facility with no quality control. Mouth tape forces nasal breathing which increases nitric oxide and reduces snoring. Blue light glasses protect melatonin onset. The silk mask eliminates light. Magnesium glycinate is the most bioavailable form for sleep quality. Four tools. One system. Non-negotiable.</p>
+        <div class="card-why">Sleep is not recovery. Sleep is production — testosterone synthesis, cortisol clearance, skin cell regeneration, memory consolidation. If you are not controlling your sleep environment you are running a production facility with no quality control. Mouth tape forces nasal breathing which increases nitric oxide and reduces snoring. Blue light glasses protect melatonin onset. The silk mask eliminates light. Magnesium glycinate is the most bioavailable form for sleep quality. Four tools. One system. Non-negotiable.</div>
         <div class="card-items">
           <div class="card-items-label">What's included</div>
           <div class="item-row"><div class="item-dot"></div><span class="item-name">Mouth Tape (60-night supply)</span><span class="item-val">$20</span></div>
@@ -784,7 +785,7 @@
         <div class="card-num">// Bundle 05 &nbsp;·&nbsp; Gymmaxx</div>
         <div class="card-name">GYMMAXX RECOVERY STACK</div>
         <div class="card-tagline">Training is the stimulus. Recovery is the result.</div>
-        <p class="card-why">Most men optimize the hour they spend in the gym and ignore the 23 hours they spend recovering. That is where muscle is built, inflammation is cleared, and the adaptation actually happens. The compact massage gun addresses deep tissue tension that foam rollers cannot reach. Creatine monohydrate is the most extensively studied performance supplement with zero legitimate downsides. The massage balls target specific trigger points. Resistance bands extend the protocol beyond the gym. Recovery is not optional — it is the protocol.</p>
+        <div class="card-why">Most men optimize the hour they spend in the gym and ignore the 23 hours they spend recovering. That is where muscle is built, inflammation is cleared, and the adaptation actually happens. The compact massage gun addresses deep tissue tension that foam rollers cannot reach. Creatine monohydrate is the most extensively studied performance supplement with zero legitimate downsides. The massage balls target specific trigger points. Resistance bands extend the protocol beyond the gym. Recovery is not optional — it is the protocol.</div>
         <div class="card-items">
           <div class="card-items-label">What's included</div>
           <div class="item-row"><div class="item-dot"></div><span class="item-name">Compact Massage Gun</span><span class="item-val">$75</span></div>
@@ -825,7 +826,7 @@
         <div class="card-num">// Bundle 06 &nbsp;·&nbsp; Framemaxx</div>
         <div class="card-name">FRAMEMAXX DAILY KIT</div>
         <div class="card-tagline">Frame is the variable that speaks before you do.</div>
-        <p class="card-why">Your posture communicates dominance or submission before a single word is said. Forward head position, rounded shoulders, and a weak jawline are the three most visible frame deficits in this age group — and all three are correctable. The posture corrector retrains spinal positioning during the day. The grip strengthener builds the handshake and forearm that projects physical capability. The jaw exerciser develops the angular jaw definition that frames the face. Three problems. Three tools. One daily protocol.</p>
+        <div class="card-why">Your posture communicates dominance or submission before a single word is said. Forward head position, rounded shoulders, and a weak jawline are the three most visible frame deficits in this age group — and all three are correctable. The posture corrector retrains spinal positioning during the day. The grip strengthener builds the handshake and forearm that projects physical capability. The jaw exerciser develops the angular jaw definition that frames the face. Three problems. Three tools. One daily protocol.</div>
         <div class="card-items">
           <div class="card-items-label">What's included</div>
           <div class="item-row"><div class="item-dot"></div><span class="item-name">Smart Posture Corrector Brace</span><span class="item-val">$30</span></div>
@@ -865,7 +866,7 @@
         <div class="card-num">// Bundle 07 &nbsp;·&nbsp; Stylemaxx</div>
         <div class="card-name">STYLEMAXX GROOMING KIT</div>
         <div class="card-tagline">The details are what separate you from most men.</div>
-        <p class="card-why">Physical optimization means nothing if the presentation is sloppy. A wrinkled shirt kills frame. An unkept beard kills jawline definition. Scuffed shoes kill the entire aesthetic before anyone sees your face. The clothes steamer eliminates every crease in under 60 seconds. The beard grooming kit builds the daily 5-minute ritual that keeps the jawline sharp. The shoe cleaning set maintains the finishing detail that men who care about presentation never skip. Details compound. Sloppiness compounds. Choose.</p>
+        <div class="card-why">Physical optimization means nothing if the presentation is sloppy. A wrinkled shirt kills frame. An unkept beard kills jawline definition. Scuffed shoes kill the entire aesthetic before anyone sees your face. The clothes steamer eliminates every crease in under 60 seconds. The beard grooming kit builds the daily 5-minute ritual that keeps the jawline sharp. The shoe cleaning set maintains the finishing detail that men who care about presentation never skip. Details compound. Sloppiness compounds. Choose.</div>
         <div class="card-items">
           <div class="card-items-label">What's included</div>
           <div class="item-row"><div class="item-dot"></div><span class="item-name">Compact Clothes Steamer</span><span class="item-val">$62</span></div>
@@ -906,7 +907,7 @@
         <div class="card-num">// Bundle 08 &nbsp;·&nbsp; Mindmaxx</div>
         <div class="card-name">MINDMAXX FOCUS PROTOCOL</div>
         <div class="card-tagline">Cognitive output is a variable. Optimize it.</div>
-        <p class="card-why">Focus is not a personality trait. It is a physiological state that is either supported or undermined by what you put in your body and the environment you operate in. Lion's Mane mushroom coffee provides NGF stimulation and clean caffeine without the cortisol spike of espresso. The nootropic stack addresses acetylcholine, dopamine, and mitochondrial function simultaneously. Blue light glasses protect melatonin for evening recovery. The Pomodoro timer creates the structured work intervals that neuroscience consistently validates for deep work. Your mind is the most important variable. Start treating it like one.</p>
+        <div class="card-why">Focus is not a personality trait. It is a physiological state that is either supported or undermined by what you put in your body and the environment you operate in. Lion's Mane mushroom coffee provides NGF stimulation and clean caffeine without the cortisol spike of espresso. The nootropic stack addresses acetylcholine, dopamine, and mitochondrial function simultaneously. Blue light glasses protect melatonin for evening recovery. The Pomodoro timer creates the structured work intervals that neuroscience consistently validates for deep work. Your mind is the most important variable. Start treating it like one.</div>
         <div class="card-items">
           <div class="card-items-label">What's included</div>
           <div class="item-row"><div class="item-dot"></div><span class="item-name">Mushroom Coffee — Lion's Mane + Chaga (30 servings)</span><span class="item-val">$48</span></div>
@@ -947,7 +948,7 @@
         <div class="card-num">// Bundle 09 &nbsp;·&nbsp; Cleanmaxx</div>
         <div class="card-name">CLEANMAXX CLEAN LIVING KIT</div>
         <div class="card-tagline" style="color:#00CFFF">Eliminate what's working against you.</div>
-        <p class="card-why">Every protocol you run has a ceiling — and that ceiling is set by what you're being exposed to daily without knowing it. PFAS from non-stick cookware. BPA from plastic containers leaching into heated food. Microplastics from plastic water bottles accumulating in tissue. Chlorine and heavy metals in unfiltered tap water. These are documented variables quietly suppressing the results of everything else you're doing. Cleanmaxx is the protocol that removes the interference.</p>
+        <div class="card-why">Every protocol you run has a ceiling — and that ceiling is set by what you're being exposed to daily without knowing it. PFAS from non-stick cookware. BPA from plastic containers leaching into heated food. Microplastics from plastic water bottles accumulating in tissue. Chlorine and heavy metals in unfiltered tap water. These are documented variables quietly suppressing the results of everything else you're doing. Cleanmaxx is the protocol that removes the interference.</div>
         <div class="card-items">
           <div class="card-items-label">What's included</div>
           <div class="item-row"><div class="item-dot" style="background:#00CFFF"></div><span class="item-name">Glass Food Storage Container Set (10-piece)</span><span class="item-val">$52</span></div>
@@ -1031,15 +1032,15 @@
   }
 
   // Scroll reveal
-  var observer = new IntersectionObserver(function(entries) {
+  var revealObs = new IntersectionObserver(function(entries) {
     entries.forEach(function(e) {
       if (e.isIntersecting) {
         e.target.classList.add('visible');
-        observer.unobserve(e.target);
+        revealObs.unobserve(e.target);
       }
     });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(function(el) { revealObs.observe(el); });
 </script>
 </body>
 </html>
