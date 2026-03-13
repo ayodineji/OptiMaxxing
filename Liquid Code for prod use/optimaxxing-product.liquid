@@ -363,6 +363,40 @@
   }
 </script>
 
+<!-- REVIEWS -->
+<section class="related-section" style="border-top:1px solid var(--border);">
+  <span class="related-heading">// Customer Reviews</span>
+  <h2 class="related-title">VERIFIED PROTOCOL RESULTS</h2>
+  
+  <!-- Start of Judge.me code -->
+  {% assign has_legacy = false %}
+  {% if prod.metafields.judgeme.widget.size > 20 %}
+    {% assign has_legacy = true %}
+  {% endif %}
+  <div style='clear:both'></div>
+  <div id='judgeme_product_reviews' class='jdgm-widget jdgm-review-widget'
+    data-product-title='{{ prod.title | escape }}'
+    data-id='{{ prod.id }}'
+    data-product-id='{{ prod.id }}'
+    data-widget='review'
+    data-auto-install='false'
+    data-shop-reviews-count='{{ shop.metafields.judgeme.shop_reviews_count | default: 0 | escape }}'
+    data-entry-point='review_widget.js'
+    data-entry-key='review-widget/main.js'>
+    {% if has_legacy %}
+      <div class='jdgm-legacy-widget-content' style='display: none;'>{{ prod.metafields.judgeme.widget }}</div>
+    {% endif %}
+  </div>
+  {% if prod.metafields.judgeme.review_widget_data %}
+    <script>
+      jdgm.data = jdgm.data || {};
+      jdgm.data.reviewWidget = jdgm.data.reviewWidget || {};
+      jdgm.data.reviewWidget[{{ prod.id }}] = {{ prod.metafields.judgeme.review_widget_data }};
+    </script>
+  {% endif %}
+  <!-- End of Judge.me code -->
+</section>
+
 {% schema %}
 {
   "name": "Optimaxxing Product",
